@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ArrowDownToLine, ArrowLeft, ArrowRight, ArrowUpRight, AudioLines, Check, ChevronDown, CircleHelp, Menu, X } from 'lucide-react';
 import { commerce, faq, products, release, site } from './config';
+import { Feedback, Moderation } from './Feedback';
 import { ScreenshotGallery } from './ScreenshotGallery';
 
 const browser = products[0];
@@ -13,6 +14,7 @@ export const pages = [
   ...products.map(product => ({ path: productPath(product), title: product.name, description: product.description })),
   { path: '/sobre/', title: 'Sobre', description: 'Conheça a AJ Plugins e suas ferramentas para REAPER.' },
   { path: '/suporte/', title: 'Suporte', description: 'Instalação, atualizações, requisitos e ajuda para ferramentas AJ Plugins.' },
+  { path: '/moderacao/', title: 'Moderação', description: 'Área privada de moderação.' },
   { path: '/404.html', title: 'Página não encontrada', description: 'Encontre os produtos e o suporte da AJ Plugins.' },
 ];
 
@@ -190,6 +192,7 @@ function Support() {
         {contacts.length ? <ul className="features">{contacts.map(({label, href}) => <li key={label}><a className="text-link" href={href}>{label}<ArrowUpRight size={16}/></a></li>)}</ul> : <p>Os canais de atendimento ainda estão em preparação.</p>}
       </section>
     </div>
+    <Feedback/>
   </div>;
 }
 
@@ -200,7 +203,7 @@ export function App({ path }: { path: string }) {
     <a className="skip" href="#conteudo">Ir para o conteúdo</a><Header path={path}/>
     <main id="conteudo" tabIndex={-1}>
       {path === '/' ? <Home state={state}/> : path === '/produtos/' ? <Catalog state={state}/> :
-        product ? <Product product={product} state={state}/> : path === '/suporte/' ? <Support/> :
+        product ? <Product product={product} state={state}/> : path === '/moderacao/' ? <Moderation/> : path === '/suporte/' ? <Support/> :
         path === '/sobre/' ? <section className="wrap interior"><Intro label="AJ PLUGINS" title="Sobre a AJ Plugins" description="Desenvolvemos scripts e ferramentas para quem produz, edita, mixa e masteriza áudio no REAPER."/>
           <div className="card about"><AudioLines size={30}/><h2>Menos tarefas repetitivas no REAPER</h2><p>O AJ Plugin Browser é dedicado à busca e à organização de plugins. O Organizador Pro está em desenvolvimento para ajudar na preparação de sessões, com foco na organização de faixas e arquivos de áudio.</p><a className="text-link" href="/produtos/">Explorar produtos <ArrowRight size={17}/></a></div>
         </section> : <section className="wrap interior"><Intro label="ERRO 404" title="Página não encontrada" description="O endereço solicitado pode ter mudado ou estar incorreto."/><a className="button primary" href="/"><ArrowLeft size={16}/> Voltar ao início</a></section>}

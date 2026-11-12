@@ -152,3 +152,17 @@ details[open] summary svg{transform:rotate(180deg)}
   .dialog-toolbar{gap:6px;padding-inline:8px}
   .dialog-toolbar .gallery-arrows{gap:3px}
 }
+
+.feedback,.moderation .feedback-list{margin-top:36px}
+.feedback > p{margin:10px 0 20px}
+.feedback-form{display:grid;gap:14px}
+.moderation .feedback-form{margin-top:22px;max-width:460px}
+.feedback-form label{display:grid;gap:6px;color:var(--silver);font-size:.9rem}
+.feedback-form :is(input,textarea,select){width:100%;padding:11px;border:1px solid #454b55;border-radius:7px;background:#101318;color:inherit;font:inherit}
+.feedback-form textarea{resize:vertical}
+.feedback-form .button{justify-self:start}
+.feedback-list{list-style:none;margin:16px 0;padding:0;display:grid;gap:16px}
+.feedback-list li{min-width:0;overflow-wrap:anywhere}
+.feedback-list li p{white-space:pre-wrap;margin-top:5px}
+.moderation [aria-pressed="true"]{border-color:var(--gold);color:var(--gold)}
+.feedback-form button:disabled,.moderation button:disabled{opacity:.6;cursor:wait}

@@ -46,3 +46,16 @@ O objeto `commerce` reserva os campos de preço em reais, checkout externo, entr
 
 O site exige um anexo público com o nome configurado, estado de upload concluído, tamanho positivo e URL canônica do repositório. Releases privadas, rascunhos, prévias, falhas de consulta e anexos ausentes mantêm **Download em breve**. A API pública do GitHub tem limites de requisição. O histórico mostra a release atual e as releases estáveis encontradas entre as dez entradas mais recentes da API.
 
+
+## Comentários e sugestões
+
+O formulário fica em `/suporte/#comentarios`. O painel em `/moderacao/` exige a chave de acesso para consultar ou moderar envios. Comentários começam pendentes. Sugestões ficam privadas e não podem ser publicadas. Use **Retirar do site** para arquivar um comentário publicado ou **Voltar para revisão** para reabrir um envio arquivado. O formulário aceita até cinco envios por origem por dia e a lista pública exibe os 30 comentários aprovados mais recentes.
+
+Para ativar em produção:
+
+1. No Cloudflare, crie um banco D1 dedicado, por exemplo `ajplugins-feedback`. Execute o conteúdo de `db/feedback.sql` no console do banco.
+2. No projeto Pages **ajplugins**, em **Settings → Bindings**, vincule esse banco em **Production** com o nome `FEEDBACK_DB`.
+3. Em **Settings → Variables and Secrets**, adicione `FEEDBACK_ADMIN_TOKEN` em **Production** como **Secret**. Gere uma chave aleatória, por exemplo com `node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"`, e guarde-a no seu gerenciador de senhas. Use essa chave no painel de moderação. Mantenha-a fora do Git.
+4. Publique a branch com a função e o formulário. Verifique que a rota pública `GET /api/feedback` responde com `items`, que `GET /api/feedback?admin` sem chave retorna 401 e que um comentário só aparece após aprovação.
+
+Referência: [Bindings e secrets no Cloudflare Pages](https://developers.cloudflare.com/pages/functions/bindings/).

@@ -22,8 +22,8 @@ for (const page of pages) {
     !missing && '<meta property="og:image" content="' + (site.origin ? escape(new URL('/social.png', site.origin).href) : '/social.png') + '">',
     !missing && '<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">',
     !missing && '<meta property="og:image:alt" content="AJ Plugins — Ferramentas inteligentes para REAPER">',
-    !missing && '<meta name="twitter:card" content="summary_large_image">',
-    missing && '<meta name="robots" content="noindex">',
+    !(missing || page.path === '/moderacao/') && '<meta name="twitter:card" content="summary_large_image">',
+    (missing || page.path === '/moderacao/') && '<meta name="robots" content="noindex">',
   ].filter(Boolean).join('\n');
   const file = 'dist' + page.path + (missing ? '' : 'index.html');
   await mkdir(dirname(file), { recursive: true });
