@@ -17,9 +17,9 @@ export const pages = [
 ];
 
 type PublishedRelease = { tag_name: string; published_at: string; body: string | null };
-type ReleaseState = { loading: boolean; url: string; history: PublishedRelease[] };
+type ReleaseState = { loading: boolean; url: string; downloads: number | null; history: PublishedRelease[] };
 const configured = release.enabled && /^[\w.-]+\/[\w.-]+$/.test(release.repository) && Boolean(release.asset);
-const initial: ReleaseState = { loading: configured, url: '', history: [] };
+const initial: ReleaseState = { loading: configured, url: '', downloads: null, history: [] };
 
 function useRelease(active: boolean) {
   const [state, setState] = useState(initial);
@@ -38,10 +38,13 @@ function useRelease(active: boolean) {
         const latest = await read('/latest');
         const expected = 'https://github.com/' + release.repository + '/releases/download/' +
           encodeURIComponent(latest.tag_name) + '/' + encodeURIComponent(release.asset);
-        const asset = latest.assets?.find((item: { name: string; state: string; size: number; browser_download_url: string }) =>
+        const asset = latest.assets?.find((item: { name: string; state: string; size: number; download_count?: number; browser_download_url: string }) =>
           item.name === release.asset && item.state === 'uploaded' && item.size > 0 && item.browser_download_url === expected);
         const history = !latest.draft && !latest.prerelease && latest.published_at ? [latest] : [];
-        setState({ loading: false, url: history.length && asset ? expected : '', history });
+        const url = history.length && asset ? expected : '';
+        const count = asset?.download_count;
+        const downloads = url && typeof count === 'number' && Number.isSafeInteger(count) && count >= 0 ? count : null;
+        setState({ loading: false, url, downloads, history });
         const entries = await read('?per_page=10').catch(() => []);
         setState(previous => ({ ...previous, history: [...history, ...entries.filter(
           (entry: PublishedRelease & { draft: boolean; prerelease: boolean }) =>
@@ -138,6 +141,9 @@ function Product({ product, state }: { product: CatalogProduct; state: ReleaseSt
     <section className="product-intro">
       <div><Intro label={product.category.toUpperCase() + ' · ' + product.status.toUpperCase()} title={product.name} description={product.description}/>
         {isBrowser && <Download state={state}/>}
+        {isBrowser && state.downloads !== null && <p className="muted">
+          {state.downloads.toLocaleString('pt-BR')} {state.downloads === 1 ? 'download' : 'downloads'} do instalador desta versão no GitHub
+        </p>}
         {isBrowser && release.platform && <p className="muted">Sistema operacional: {release.platform}</p>}
       </div>
     </section>
