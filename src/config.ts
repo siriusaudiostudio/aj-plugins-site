@@ -112,8 +112,8 @@ export const products = [
     category: 'Ferramenta para REAPER',
     action: 'Conhecer o AJ Organizer Pro',
     highlights: [
-      { title: 'IA de BPM e batidas', description: 'Analise a mixagem do VS ou um áudio escolhido para estimar BPM, batidas e compasso. Ajuste a grade ao andamento original ou alinhe os stems juntos a um BPM fixo.' },
-      { title: 'IA de reconhecimento de instrumentos', description: 'Identifique famílias de instrumentos pelo áudio e sugira pistas da sessão. O destino pode ser preenchido automaticamente quando houver uma opção compatível e inequívoca.' },
+      { title: 'IA de BPM e batidas', description: 'Quando o BPM não estiver informado no nome da pasta ou do clique, a IA analisa a mixagem do VS ou um áudio escolhido para estimar o BPM, identificar as batidas e sugerir o compasso. Ajuste a grade ao andamento original ou alinhe os stems juntos a um BPM fixo.' },
+      { title: 'IA de reconhecimento de instrumentos e sugestão de destinos', description: 'A IA analisa o áudio de cada stem para reconhecer a família do instrumento. O Organizer usa esse resultado e as regras da sessão para sugerir a pista de destino no REAPER e pode preenchê-la automaticamente quando houver uma opção compatível e inequívoca.' },
       { title: 'Da importação ao ensaio', description: 'Revise e importe várias músicas em ordem, alinhe os stems pelo clique e exporte um MP3 de ensaio com clique e guia quando presentes.' },
     ],
     features: [
@@ -126,13 +126,13 @@ export const products = [
       { title: 'Reconhecimento de instrumentos e destinos', items: [
         'Analise as pistas da sessão aberta no REAPER, incluindo canais soltos e canais organizados em pastas.',
         'Identifique instrumentos por nomes, abreviações e aliases. Indicações como Solo, L e R ajudam a localizar um destino compatível.',
-        'Use a análise local de áudio com YAMNet para identificar a família do instrumento quando o nome for insuficiente. O destino pode ser preenchido automaticamente quando o reconhecimento e as regras da sessão indicarem uma opção compatível e inequívoca.',
+        'Quando o nome for insuficiente, a IA YAMNet analisa o áudio localmente para identificar a família do instrumento e ajudar o Organizer a sugerir uma pista de destino. O destino pode ser preenchido automaticamente quando o reconhecimento e as regras da sessão indicarem uma opção compatível e inequívoca.',
         'Pesquise e altere destinos entre as pistas reais da sessão. Filtre por família ou consulte todas as pistas.',
         'Aplique um destino a vários arquivos, ignore áudios do lote, autorize stems a compartilhar uma pista ou crie um canal quando faltar um destino.',
         'Aplique a escolha apenas à importação atual ou salve aliases, vínculos e regras para os próximos lotes.',
       ] },
       { title: 'BPM, compasso e alinhamento musical', items: [
-        'Aproveite o BPM indicado no nome da pasta ou do clique. Se a informação estiver ausente, estime BPM e batidas pela mixagem do VS ou por um áudio escolhido.',
+        'Aproveite o BPM indicado no nome da pasta ou do clique. Se a informação estiver ausente, a IA analisa a mixagem do VS ou um áudio escolhido para estimar o BPM e identificar as batidas.',
         'Trabalhe com BPM fracionado, estimativa de compasso e mudanças sustentadas de andamento. Ajuste BPM e compasso manualmente quando precisar.',
         'Preserve o áudio e ajuste a grade do REAPER ao andamento detectado ou ajuste todos os stems juntos a um BPM fixo.',
         'Localize o primeiro ataque significativo do clique com a ferramenta de transientes e ajuste o início com um corte sincronizado entre os stems.',
