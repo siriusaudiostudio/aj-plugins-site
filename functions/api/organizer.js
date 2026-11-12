@@ -1,3 +1,5 @@
+import { deliverOrder, emailEnabled } from '../../server/organizer-email.js';
+
 const encoder = new TextEncoder();
 const product = 'AJ-Organizer-Pro';
 const installer = 'AJ-Organizer-Pro-Setup-0.2.80-x64.exe';
@@ -74,6 +76,10 @@ async function approve(request, url, env) {
   const { meta } = await env.ORGANIZER_DB.prepare(
     'UPDATE organizer_orders SET payment_id = ? WHERE id = ? AND (payment_id IS NULL OR payment_id = ?) AND NOT EXISTS (SELECT 1 FROM organizer_orders WHERE payment_id = ? AND id <> ?)',
   ).bind(id, payment.external_reference, id, id, payment.external_reference).run();
+  if (meta.changes > 0 && emailEnabled(env)) {
+    try { await deliverOrder(env, payment.external_reference); }
+    catch { return json(503, { error: 'Pagamento registrado; entrega de e-mail pendente.' }); }
+  }
   return json(200, { accepted: meta.changes > 0 });
 }
 
@@ -83,15 +89,30 @@ export async function onRequest({ request, env }) {
     return json(503, { error: 'Serviço indisponível.' });
   }
   const url = new URL(request.url);
+  if (url.searchParams.has('delivery') && request.method === 'POST') {
+    const supplied = request.headers.get('Authorization')?.replace(/^Bearer /, '') ?? '';
+    if (!env.ORGANIZER_DELIVERY_ADMIN_TOKEN || await tokenHash(supplied) !== await tokenHash(env.ORGANIZER_DELIVERY_ADMIN_TOKEN)) {
+      return json(401, { error: 'Acesso inválido.' });
+    }
+    const id = (await request.json().catch(() => null))?.orderId;
+    if (typeof id !== 'string' || !/^[a-f0-9-]{36}$/.test(id)) return json(400, { error: 'Pedido inválido.' });
+    try { return json(200, await deliverOrder(env, id)); }
+    catch { return json(503, { error: 'Entrega pendente. Consulte a configuração e o registro de envio.' }); }
+  }
   if (url.searchParams.has('webhook') && request.method === 'POST') return approve(request, url, env);
   if (url.searchParams.has('checkout') && request.method === 'POST') return createOrder(request, url, env);
 
   const token = request.headers.get('Authorization')?.match(/^Bearer ([a-f0-9]{64})$/)?.[1];
   if (!token) return json(401, { error: 'Acesso inválido.' });
   const hash = await tokenHash(token);
-  const order = await env.ORGANIZER_DB.prepare(
+  let order = await env.ORGANIZER_DB.prepare(
     'SELECT id, buyer_name, buyer_email FROM organizer_orders WHERE access_hash = ? AND payment_id IS NOT NULL',
   ).bind(hash).first();
+  if (!order && env.ORGANIZER_DELIVERY_KEY) {
+    order = await env.ORGANIZER_DB.prepare(
+      'SELECT o.id, o.buyer_name, o.buyer_email FROM organizer_orders o JOIN organizer_delivery d ON d.order_id = o.id WHERE d.access_hash = ? AND o.payment_id IS NOT NULL',
+    ).bind(hash).first();
+  }
   if (!order) return json(403, { error: 'Pedido sem acesso liberado.' });
   if (request.method === 'GET' && url.searchParams.has('status')) return json(200, { approved: true });
 
