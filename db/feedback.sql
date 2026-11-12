@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS feedback (
   id TEXT PRIMARY KEY,
+  product TEXT NOT NULL DEFAULT 'aj-plugin-browser',
   kind TEXT NOT NULL CHECK (kind IN ('comment', 'suggestion')),
   name TEXT NOT NULL CHECK (length(name) BETWEEN 1 AND 60),
   message TEXT NOT NULL CHECK (length(message) BETWEEN 10 AND 1500),

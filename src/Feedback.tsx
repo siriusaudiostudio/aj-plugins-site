@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
+import { products } from './config';
 
 type Status = 'pending' | 'approved' | 'rejected';
 type Comment = { id: string; name: string; message: string; created_at: number };
-type Submission = Comment & { kind: 'comment' | 'suggestion'; status: Status };
+type Submission = Comment & { kind: 'comment' | 'suggestion'; status: Status; product: string };
 const labels: Record<Status, string> = { pending: 'Pendentes', approved: 'Publicados', rejected: 'Arquivados' };
 
 async function feedback<T>(query = '', options?: RequestInit): Promise<T> {
@@ -15,7 +16,8 @@ async function feedback<T>(query = '', options?: RequestInit): Promise<T> {
   return data;
 }
 
-export function Feedback() {
+export function Feedback({ product, productName }: { product: string; productName: string }) {
+  const query = `?product=${encodeURIComponent(product)}`;
   const [comments, setComments] = useState<Comment[] | null>(null);
   const [available, setAvailable] = useState<boolean | null>(null);
   const [busy, setBusy] = useState(false);
@@ -23,12 +25,12 @@ export function Feedback() {
 
   useEffect(() => {
     const controller = new AbortController();
-    feedback<{ items: Comment[] }>('', { signal: controller.signal }).then(({ items }) => {
+    feedback<{ items: Comment[] }>(query, { signal: controller.signal }).then(({ items }) => {
       setComments(items);
       setAvailable(true);
     }).catch(() => { if (!controller.signal.aborted) setAvailable(false); });
     return () => controller.abort();
-  }, []);
+  }, [query]);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -37,7 +39,7 @@ export function Feedback() {
     setNotice('');
     setBusy(true);
     try {
-      await feedback('', {
+      await feedback(query, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ kind: data.get('kind'), name: data.get('name'), message: data.get('message'), website: data.get('website') }),
@@ -53,7 +55,7 @@ export function Feedback() {
 
   return <section className="feedback" id="comentarios" aria-labelledby="feedback-title">
     <h2 id="feedback-title">Comentários e sugestões</h2>
-    <p>Conte como você usa as ferramentas da AJ Plugins ou envie uma sugestão de melhoria.</p>
+    <p>Conte como você usa o {productName} ou envie uma sugestão de melhoria.</p>
     {available === null && <p role="status">Carregando comentários…</p>}
     {available === false && <p role="status">Comentários e sugestões temporariamente indisponíveis.</p>}
     {available && <div className="info-grid">
@@ -128,7 +130,7 @@ export function Moderation() {
         <button className="button secondary" type="button" disabled={busy} onClick={() => { setToken(''); setItems([]); setNext(null); setNotice(''); }}>Sair</button>
       </div>
       {items.length ? <ul className="feedback-list">{items.map(item => <li key={item.id} className="card">
-        <strong>{item.name}</strong> <span className="muted">· {item.kind === 'comment' ? 'Comentário' : 'Sugestão privada'} · {new Date(item.created_at).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' })}</span>
+        <strong>{item.name}</strong> <span className="muted">· {products.find(product => product.slug === item.product)?.name ?? item.product} · {item.kind === 'comment' ? 'Comentário' : 'Sugestão privada'} · {new Date(item.created_at).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' })}</span>
         <p>{item.message}</p>
         <div className="actions">
           {item.kind === 'comment' && status !== 'approved' && <button className="button primary" disabled={busy} onClick={() => void moderate(item, 'approved')}>Aprovar e publicar</button>}

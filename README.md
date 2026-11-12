@@ -49,7 +49,9 @@ O site exige um anexo público com o nome configurado, estado de upload concluí
 
 ## Comentários e sugestões
 
-O formulário fica em `/suporte/#comentarios`. O painel em `/moderacao/` exige a chave de acesso para consultar ou moderar envios. Comentários começam pendentes. Sugestões ficam privadas e não podem ser publicadas. Use **Retirar do site** para arquivar um comentário publicado ou **Voltar para revisão** para reabrir um envio arquivado. O formulário aceita até cinco envios por origem por dia e a lista pública exibe os 30 comentários aprovados mais recentes.
+Cada página de produto tem sua própria seção `#comentarios`. O painel identifica o produto de cada envio. O painel em `/moderacao/` exige a chave de acesso para consultar ou moderar envios. Comentários começam pendentes. Sugestões ficam privadas e não podem ser publicadas. Use **Retirar do site** para arquivar um comentário publicado ou **Voltar para revisão** para reabrir um envio arquivado. O formulário aceita até cinco envios por origem por dia e a lista pública exibe os 30 comentários aprovados mais recentes.
+
+Para um banco existente com o esquema anterior, execute `db/feedback-by-product.sql` uma vez antes do deploy. Os envios existentes ficam associados ao AJ Plugin Browser.
 
 Para ativar em produção:
 

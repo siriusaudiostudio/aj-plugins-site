@@ -3,7 +3,8 @@ const json = (body, status = 200) => Response.json(body, {
   headers: { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' },
 });
 
-const fields = 'id, kind, name, message, status, created_at';
+const fields = 'id, kind, name, message, status, created_at, product';
+const products = new Set(['aj-plugin-browser', 'organizador-pro']);
 const encoder = new TextEncoder();
 
 async function readBody(request) {
@@ -45,6 +46,8 @@ export async function onRequest({ request, env }) {
   if (admin && !await isAdmin(request, env.FEEDBACK_ADMIN_TOKEN)) {
     return json({ error: 'Chave de acesso inválida.' }, 401);
   }
+  const product = url.searchParams.get('product') ?? 'aj-plugin-browser';
+  if (!admin && !products.has(product)) return json({ error: 'Produto inválido.' }, 400);
   if (request.method === 'GET') {
     if (admin) {
       const status = url.searchParams.get('status') ?? 'pending';
@@ -60,8 +63,8 @@ export async function onRequest({ request, env }) {
       return json({ items, next: results.length > 30 ? last.created_at + ':' + last.id : null });
     }
     const { results } = await db.prepare(
-      "SELECT id, name, message, created_at FROM feedback WHERE status = 'approved' AND kind = 'comment' ORDER BY created_at DESC, id DESC LIMIT 30",
-    ).all();
+      "SELECT id, name, message, created_at FROM feedback WHERE status = 'approved' AND kind = 'comment' AND product = ? ORDER BY created_at DESC, id DESC LIMIT 30",
+    ).bind(product).all();
     return json({ items: results });
   }
   if ((admin && request.method !== 'PATCH') || (!admin && request.method !== 'POST')) {
@@ -93,8 +96,8 @@ export async function onRequest({ request, env }) {
   const hash = await crypto.subtle.sign('HMAC', key, encoder.encode(day + ':' + ip));
   const submitter = Array.from(new Uint8Array(hash), byte => byte.toString(16).padStart(2, '0')).join('');
   const { meta } = await db.prepare(
-    'INSERT INTO feedback (id, kind, name, message, submitter, created_at) SELECT ?, ?, ?, ?, ?, ? WHERE (SELECT count(*) FROM feedback WHERE submitter = ? AND created_at >= ?) < 5',
-  ).bind(crypto.randomUUID(), kind, name, message, submitter, now, submitter, day * 86400000).run();
+    'INSERT INTO feedback (id, kind, name, message, submitter, created_at, product) SELECT ?, ?, ?, ?, ?, ?, ? WHERE (SELECT count(*) FROM feedback WHERE submitter = ? AND created_at >= ?) < 5',
+  ).bind(crypto.randomUUID(), kind, name, message, submitter, now, product, submitter, day * 86400000).run();
   return meta.changes ? json({ ok: true }, 201) : json({ error: 'Limite de envios atingido. Tente novamente amanhã.' }, 429);
 }
 

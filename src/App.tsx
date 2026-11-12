@@ -139,7 +139,10 @@ function Product({ product, state }: { product: CatalogProduct; state: ReleaseSt
   const manual = safeLink(release.manual);
   const documentation = safeLink(commerce.documentationUrl);
   return <div className="wrap interior">
-    <a className="text-link back" href="/produtos/"><ArrowLeft size={16}/> Todos os produtos</a>
+    <nav className="actions" aria-label="Navegação do produto">
+      <a className="text-link" href="/produtos/"><ArrowLeft size={16}/> Todos os produtos</a>
+      <a className="text-link" href="#comentarios">Comentários e sugestões</a>
+    </nav>
     <section className="product-intro">
       <div><Intro label={product.category.toUpperCase() + ' · ' + product.status.toUpperCase()} title={product.name} description={product.description}/>
         {isBrowser && <Download state={state}/>}
@@ -176,7 +179,7 @@ function Product({ product, state }: { product: CatalogProduct; state: ReleaseSt
         <p className="release-notes">{entry.body || 'Sem notas de atualização.'}</p></details>)}</> :
         <p>{isBrowser && state.loading ? 'Consultando versões…' : 'O histórico ficará disponível com as versões publicadas.'}</p>}
     </section>
-    {isBrowser && <Feedback/>}
+    <Feedback product={product.slug} productName={product.name}/>
   </div>;
 }
 
