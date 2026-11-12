@@ -141,6 +141,7 @@ function Product({ product, state }: { product: CatalogProduct; state: ReleaseSt
   return <div className="wrap interior">
     <nav className="actions" aria-label="Navegação do produto">
       <a className="text-link" href="/produtos/"><ArrowLeft size={16}/> Todos os produtos</a>
+      {product.slug === 'organizador-pro' && <a className="text-link" href="#recursos">Recursos</a>}
       <a className="text-link" href="#comentarios">Comentários e sugestões</a>
     </nav>
     <section className="product-intro">
@@ -150,6 +151,7 @@ function Product({ product, state }: { product: CatalogProduct; state: ReleaseSt
           {state.downloads.toLocaleString('pt-BR')} {state.downloads === 1 ? 'download' : 'downloads'} do instalador desta versão no GitHub
         </p>}
         {isBrowser && release.platform && <p className="muted">Sistema operacional: {release.platform}</p>}
+        {product.slug === 'organizador-pro' && <p className="muted">Versão {product.version} · {product.requirements}</p>}
       </div>
     </section>
     {isBrowser && <section className="interface-section" aria-labelledby="interface-title">
@@ -164,10 +166,17 @@ function Product({ product, state }: { product: CatalogProduct; state: ReleaseSt
     </section>}
     {product.slug === 'organizador-pro' && <section className="workflow" aria-labelledby="organizer-workflow">
       <h2 id="organizer-workflow">Da pasta de stems à sessão de VS</h2>
-      <ul className="steps">{product.features.map(feature => <li key={feature.title}>
+      <ul className="steps">{product.highlights.map(feature => <li key={feature.title}>
         <strong>{feature.title}</strong>
         {feature.description}
       </li>)}</ul>
+    </section>}
+    {product.slug === 'organizador-pro' && <section className="workflow" id="recursos" aria-labelledby="organizer-features">
+      <h2 id="organizer-features">Recursos do AJ Organizer Pro</h2>
+      <div className="info-grid">{product.features.map(group => <section className="card" key={group.title}>
+        <h3>{group.title}</h3>
+        <ul className="features">{group.items.map(item => <li key={item}><Check size={16} aria-hidden="true"/>{item}</li>)}</ul>
+      </section>)}</div>
     </section>}
     <div className="product-resources">
       {isBrowser ? <section className="card"><h2>Requisitos e instalação</h2>
