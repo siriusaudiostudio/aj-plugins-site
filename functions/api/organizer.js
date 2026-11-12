@@ -27,7 +27,7 @@ async function createOrder(request, url, env) {
       payer: { name, email },
       back_urls: { success: returnUrl, pending: returnUrl, failure: returnUrl },
       notification_url: url.origin + '/api/organizer?webhook',
-      payment_methods: { installments: 1, excluded_payment_types: ['ticket', 'atm', 'prepaid_card', 'digital_currency', 'consumer_credits', 'account_money'].map(id => ({ id })) },
+      payment_methods: { installments: 1, excluded_payment_types: ['ticket', 'atm', 'prepaid_card', 'digital_currency', 'consumer_credits'].map(id => ({ id })) },
     }),
   });
   if (!response.ok) {
@@ -67,7 +67,7 @@ async function approve(request, url, env) {
   const payment = await upstream.json();
   if (String(payment.id) !== id || String(payment.collector_id) !== env.MP_COLLECTOR_ID ||
       payment.live_mode !== (env.MP_LIVE_MODE === 'true') || payment.status !== 'approved' ||
-      !(payment.payment_method_id === 'pix' || (['credit_card', 'debit_card'].includes(payment.payment_type_id) && payment.installments === 1)) || payment.currency_id !== 'BRL' || payment.transaction_amount !== 19.90 ||
+      !(payment.payment_method_id === 'pix' || payment.payment_type_id === 'account_money' || (['credit_card', 'debit_card'].includes(payment.payment_type_id) && payment.installments === 1)) || payment.currency_id !== 'BRL' || payment.transaction_amount !== 19.90 ||
       typeof payment.external_reference !== 'string') {
     return json(200, { accepted: false });
   }
