@@ -30,7 +30,11 @@ async function createOrder(request, url, env) {
       payment_methods: { installments: 1, excluded_payment_types: ['ticket', 'atm', 'prepaid_card', 'digital_currency', 'consumer_credits', 'account_money'].map(id => ({ id })) },
     }),
   });
-  if (!response.ok) return json(502, { error: 'Não foi possível abrir o checkout.' });
+  if (!response.ok) {
+    const failure = await response.json().catch(() => null);
+    const code = /^[a-z_]{1,80}$/i.test(failure?.error ?? '') ? failure.error : 'unknown';
+    return json(502, { error: 'Não foi possível abrir o checkout.', providerStatus: response.status, providerCode: code });
+  }
   const preference = await response.json();
   const checkout = URL.parse(env.MP_LIVE_MODE === 'true' ? preference.init_point : preference.sandbox_init_point);
   if (!checkout || checkout.protocol !== 'https:' || !['www.mercadopago.com.br', 'sandbox.mercadopago.com.br'].includes(checkout.hostname)) {
