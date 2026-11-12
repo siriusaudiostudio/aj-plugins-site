@@ -1,3 +1,4 @@
+import { OrganizerCheckout } from './OrganizerCheckout';
 import { useEffect, useState } from 'react';
 import { ArrowDownToLine, ArrowLeft, ArrowRight, ArrowUpRight, AudioLines, Check, ChevronDown, CircleHelp, Menu, X } from 'lucide-react';
 import { commerce, faq, products, release, site } from './config';
@@ -5,6 +6,7 @@ import { Feedback, Moderation } from './Feedback';
 import { ScreenshotGallery } from './ScreenshotGallery';
 
 const browser = products[0];
+const organizerCheckout = import.meta.env.VITE_ORGANIZER_CHECKOUT === 'true';
 type CatalogProduct = (typeof products)[number];
 const productPath = (product: CatalogProduct) => '/produtos/' + product.slug + '/';
 const nav = [['Início', '/'], ['Produtos', '/produtos/'], ['Sobre', '/sobre/'], ['Suporte', '/suporte/']];
@@ -142,10 +144,11 @@ function Product({ product, state }: { product: CatalogProduct; state: ReleaseSt
     <nav className="actions" aria-label="Navegação do produto">
       <a className="text-link" href="/produtos/"><ArrowLeft size={16}/> Todos os produtos</a>
       {product.slug === 'organizador-pro' && <a className="text-link" href="#recursos">Recursos</a>}
+      {organizerCheckout && !isBrowser && <a className="text-link" href="#licenca">Licença e compra</a>}
       <a className="text-link" href="#comentarios">Comentários e sugestões</a>
     </nav>
     <section className="product-intro">
-      <div><Intro label={product.category.toUpperCase() + ' · ' + product.status.toUpperCase()} title={product.name} description={product.description}/>
+      <div><Intro label={product.category.toUpperCase() + ' · ' + (!isBrowser && organizerCheckout ? 'DISPONÍVEL' : product.status.toUpperCase())} title={product.name} description={product.description}/>
         {isBrowser && <Download state={state}/>}
         {isBrowser && state.downloads !== null && <p className="muted">
           {state.downloads.toLocaleString('pt-BR')} {state.downloads === 1 ? 'download' : 'downloads'} do instalador desta versão no GitHub
@@ -183,9 +186,9 @@ function Product({ product, state }: { product: CatalogProduct; state: ReleaseSt
         <ul className="features">{release.requirements.map(requirement => <li key={requirement}><Check size={16}/>{requirement}</li>)}</ul>
         {manual ? <a className="text-link" href={manual}>Manual de instalação <ArrowUpRight size={16}/></a> : <p>Manual de instalação em preparação.</p>}
         <a className="text-link" href="/suporte/#instalacao">Orientações para instalar ReaScripts <ArrowRight size={16}/></a>
-      </section> : <section className="card"><h2>Modelo comercial planejado</h2>
+      </section> : <section className="card" id="licenca"><h2>Licença vitalícia</h2>
         <ul className="features">{commerce.model.map(item => <li key={item}><Check size={16}/>{item}</li>)}</ul>
-        <p>Informações sobre compra, entrega e ativação serão divulgadas com a disponibilidade do produto.</p>
+        {organizerCheckout ? <OrganizerCheckout/> : <p>Informações sobre compra, entrega e ativação serão divulgadas com a disponibilidade do produto.</p>}
         {documentation && <a className="text-link" href={documentation}>Documentação <ArrowUpRight size={16}/></a>}
       </section>}
     </div>

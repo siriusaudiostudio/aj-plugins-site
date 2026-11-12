@@ -18,8 +18,9 @@ export const release = {
 };
 
 export const commerce = {
-  priceBRL: null as number | null,
+  priceBRL: 19.90 as number | null,
   checkoutUrl: '',
+  fulfillmentInstructions: '',
   deliveryUrl: '',
   licenseValidationUrl: '',
   documentationUrl: '',
