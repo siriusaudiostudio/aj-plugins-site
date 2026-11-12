@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
 import { products } from './config';
+import { DownloadStats } from './DownloadStats';
 
 type Status = 'pending' | 'approved' | 'rejected';
 type Comment = { id: string; name: string; message: string; created_at: number };
@@ -125,6 +126,7 @@ export function Moderation() {
       <label>Chave de acesso<input name="token" type="password" required autoComplete="current-password"/></label>
       <button className="button primary" disabled={busy}>{busy ? 'Verificando…' : 'Entrar'}</button>
     </form> : <>
+      <DownloadStats/>
       <div className="actions">
         {(Object.keys(labels) as Status[]).map(filter => <button key={filter} className="button secondary" type="button" aria-pressed={status === filter} disabled={busy} onClick={() => void load(token, filter)}>{labels[filter]}</button>)}
         <button className="button secondary" type="button" disabled={busy} onClick={() => { setToken(''); setItems([]); setNext(null); setNotice(''); }}>Sair</button>
