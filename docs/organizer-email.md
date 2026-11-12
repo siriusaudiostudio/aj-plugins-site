@@ -47,3 +47,13 @@ FROM organizer_delivery;
 `node --test scripts/organizer-email-test.mjs`
 
 Testes usam SQLite real em memória e respostas simuladas dos provedores. Cobrem pagamento pendente/aprovado, assinatura inválida, falha e repetição, destinatário, criptografia, código antigo, novo código e bloqueio do terceiro computador. Não comprovam envio real de e-mail ou entrega na caixa de entrada.
+# Recuperação e acompanhamento (12/11/2026)
+
+Aplicar também `db/organizer-recovery.sql` antes de publicar esta versão, em cada ambiente. Migração aditiva: não altera credenciais nem computadores existentes.
+
+- A página do produto oferece **Já comprei — recuperar meu pedido**. `POST /api/organizer?recover` recebe somente o e-mail; envia ao endereço registrado, nunca a um destinatário fornecido separadamente. A resposta pública não revela se há pedidos. Pedidos não pagos ou bloqueados não recebem acesso.
+- Reenvio reutiliza a credencial criptografada e mantém o limite compartilhado de dois computadores. Limites persistentes: 15 minutos entre solicitações por e-mail, 3/dia por e-mail, 10/h por IP e 100 solicitações/dia globais. Até cinco pedidos por e-mail. A execução usa `waitUntil`; falhas ficam registradas na tabela de entrega. Não há tarefa periódica: repetir após o intervalo ou acionar suporte em caso de falha.
+- **Salvar meu acesso** baixa um arquivo privado com código e link. Não é uma nova licença e não altera a ativação. E-mail incorreto na compra exige suporte e conferência do comprovante; não há troca anônima de destinatário.
+- A consulta autenticada do pedido acompanha eventos reais da API Brevo, com cache de um minuto. Aceite do provedor, recebimento pelo servidor destinatário, adiamento e bloqueio são estados diferentes. `delivered` não garante caixa principal nem leitura. Não há webhook Brevo configurado; a consulta ocorre ao verificar o pedido/atualizar a situação.
+- Notificações assinadas do Mercado Pago consultam o pagamento na API. Reembolso integral, chargeback e cancelamento de pagamento vinculado bloqueiam novos downloads, recuperação e ativações, mantendo histórico e vagas. O bloqueio é conservador e exige revisão manual para reversão. Uma licença permanente já emitida funciona offline: este ajuste **não revoga retroativamente o arquivo no computador**. Reembolsos parciais e disputas precisam de acompanhamento administrativo.
+- Troca de computador: verificar identidade/comprovante e avaliar individualmente. Não apagar vagas automaticamente: isso permitiria emitir licenças offline ilimitadas. Não há transferência automática implementada.

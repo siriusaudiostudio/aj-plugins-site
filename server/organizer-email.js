@@ -20,12 +20,12 @@ export function deliveryMessage(order, token, origin) {
 
 // A second credential preserves existing activation codes and the same two-machine allocation.
 // Only its hash and AES-GCM encrypted value are stored in D1.
-export async function deliverOrder(env, orderId) {
+export async function deliverOrder(env, orderId, { resend = false } = {}) {
   if (!emailEnabled(env)) return { state: 'disabled' };
   if (!env.BREVO_API_KEY || !env.ORGANIZER_EMAIL_FROM) throw new Error('delivery_configuration');
   const origin = new URL(env.ORGANIZER_PUBLIC_ORIGIN);
   if (origin.protocol !== 'https:' || origin.origin !== env.ORGANIZER_PUBLIC_ORIGIN) throw new Error('delivery_configuration');
-  const order = await env.ORGANIZER_DB.prepare('SELECT id, buyer_name, buyer_email FROM organizer_orders WHERE id = ? AND payment_id IS NOT NULL').bind(orderId).first();
+  const order = await env.ORGANIZER_DB.prepare('SELECT id, buyer_name, buyer_email FROM organizer_orders WHERE id = ? AND payment_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM organizer_access_blocks WHERE order_id = organizer_orders.id)').bind(orderId).first();
   if (!order) return { state: 'unpaid' };
   const key = await encryptionKey(env);
   let delivery = await env.ORGANIZER_DB.prepare('SELECT * FROM organizer_delivery WHERE order_id = ?').bind(orderId).first();
@@ -37,11 +37,12 @@ export async function deliverOrder(env, orderId) {
       .bind(orderId, await hash(token), hex(iv) + ':' + hex(encrypted)).run();
     delivery = await env.ORGANIZER_DB.prepare('SELECT * FROM organizer_delivery WHERE order_id = ?').bind(orderId).first();
   }
-  if (delivery.state === 'sent') return { state: 'sent' };
+  if (delivery.state === 'sent' && !resend) return { state: 'sent' };
   const now = Date.now();
+  if (resend && delivery.sent_at && now - Date.parse(delivery.sent_at) < 900000) return { state: 'cooldown' };
   const lease = now + 120000;
-  const claim = await env.ORGANIZER_DB.prepare("UPDATE organizer_delivery SET state = 'sending', lease_until = ?, attempts = attempts + 1 WHERE order_id = ? AND state <> 'sent' AND lease_until <= ?")
-    .bind(lease, orderId, now).run();
+  const claim = await env.ORGANIZER_DB.prepare("UPDATE organizer_delivery SET state = 'sending', lease_until = ?, attempts = attempts + 1 WHERE order_id = ? AND " + (resend ? "(sent_at IS NULL OR sent_at = ?) AND " : "state <> 'sent' AND ") + "lease_until <= ?")
+    .bind(...(resend ? [lease, orderId, delivery.sent_at, now] : [lease, orderId, now])).run();
   if (!claim.meta.changes) throw new Error('delivery_busy');
   let providerId;
   try {
@@ -54,7 +55,7 @@ export async function deliverOrder(env, orderId) {
         sender: { name: 'AJ Plugins', email: env.ORGANIZER_EMAIL_FROM },
         replyTo: { name: 'AJ Plugins', email: env.ORGANIZER_EMAIL_REPLY_TO || env.ORGANIZER_EMAIL_FROM },
         to: [{ name: order.buyer_name, email: order.buyer_email }],
-        headers: { IdempotencyKey: 'organizer-delivery-' + orderId },
+        headers: { IdempotencyKey: 'organizer-delivery-' + orderId + (resend ? '-recovery-' + Math.floor(now / 900000) : '') },
         tags: ['organizer-delivery'], ...deliveryMessage(order, token, origin.origin),
       }),
     });

@@ -1,4 +1,5 @@
 import { deliverOrder, emailEnabled } from '../../server/organizer-email.js';
+import { recoverOrder, deliveryStatus } from '../../server/organizer-recovery.js';
 
 const encoder = new TextEncoder();
 const product = 'AJ-Organizer-Pro';
@@ -68,11 +69,19 @@ async function approve(request, url, env) {
   if (!upstream.ok) return json(502, { error: 'Não foi possível consultar o pagamento.' });
   const payment = await upstream.json();
   if (String(payment.id) !== id || String(payment.collector_id) !== env.MP_COLLECTOR_ID ||
-      payment.live_mode !== (env.MP_LIVE_MODE === 'true') || payment.status !== 'approved' ||
+      payment.live_mode !== (env.MP_LIVE_MODE === 'true') ||
       !(payment.payment_method_id === 'pix' || payment.payment_type_id === 'account_money' || (['credit_card', 'debit_card'].includes(payment.payment_type_id) && payment.installments === 1)) || payment.currency_id !== 'BRL' || payment.transaction_amount !== 19.90 ||
       typeof payment.external_reference !== 'string') {
     return json(200, { accepted: false });
   }
+  if (['refunded', 'charged_back', 'cancelled'].includes(payment.status)) {
+    await env.ORGANIZER_DB.prepare(`INSERT INTO organizer_access_blocks (order_id, reason, updated_at)
+      SELECT id, ?, ? FROM organizer_orders WHERE id = ? AND payment_id = ?
+      ON CONFLICT(order_id) DO UPDATE SET reason = excluded.reason, updated_at = excluded.updated_at`)
+      .bind(payment.status, new Date().toISOString(), payment.external_reference, id).run();
+    return json(200, { accepted: true });
+  }
+  if (payment.status !== 'approved') return json(200, { accepted: false });
   const { meta } = await env.ORGANIZER_DB.prepare(
     'UPDATE organizer_orders SET payment_id = ? WHERE id = ? AND (payment_id IS NULL OR payment_id = ?) AND NOT EXISTS (SELECT 1 FROM organizer_orders WHERE payment_id = ? AND id <> ?)',
   ).bind(id, payment.external_reference, id, id, payment.external_reference).run();
@@ -83,12 +92,13 @@ async function approve(request, url, env) {
   return json(200, { accepted: meta.changes > 0 });
 }
 
-export async function onRequest({ request, env }) {
+export async function onRequest({ request, env, waitUntil }) {
   if (!env.ORGANIZER_DB || !env.ORGANIZER_INSTALLERS || !env.ORGANIZER_SIGNING_KEY ||
       !env.MP_WEBHOOK_SECRET || !env.MP_ACCESS_TOKEN || !env.MP_COLLECTOR_ID) {
     return json(503, { error: 'Serviço indisponível.' });
   }
   const url = new URL(request.url);
+  if (url.searchParams.has('recover') && request.method === 'POST') return recoverOrder(request, env, waitUntil);
   if (url.searchParams.has('delivery') && request.method === 'POST') {
     const supplied = request.headers.get('Authorization')?.replace(/^Bearer /, '') ?? '';
     if (!env.ORGANIZER_DELIVERY_ADMIN_TOKEN || await tokenHash(supplied) !== await tokenHash(env.ORGANIZER_DELIVERY_ADMIN_TOKEN)) {
@@ -106,15 +116,16 @@ export async function onRequest({ request, env }) {
   if (!token) return json(401, { error: 'Acesso inválido.' });
   const hash = await tokenHash(token);
   let order = await env.ORGANIZER_DB.prepare(
-    'SELECT id, buyer_name, buyer_email FROM organizer_orders WHERE access_hash = ? AND payment_id IS NOT NULL',
+    'SELECT id, buyer_name, buyer_email FROM organizer_orders WHERE access_hash = ? AND payment_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM organizer_access_blocks WHERE order_id = organizer_orders.id)',
   ).bind(hash).first();
   if (!order && env.ORGANIZER_DELIVERY_KEY) {
     order = await env.ORGANIZER_DB.prepare(
-      'SELECT o.id, o.buyer_name, o.buyer_email FROM organizer_orders o JOIN organizer_delivery d ON d.order_id = o.id WHERE d.access_hash = ? AND o.payment_id IS NOT NULL',
+      'SELECT o.id, o.buyer_name, o.buyer_email FROM organizer_orders o JOIN organizer_delivery d ON d.order_id = o.id WHERE d.access_hash = ? AND o.payment_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM organizer_access_blocks WHERE order_id = o.id)',
     ).bind(hash).first();
   }
   if (!order) return json(403, { error: 'Pedido sem acesso liberado.' });
-  if (request.method === 'GET' && url.searchParams.has('status')) return json(200, { approved: true });
+  if (request.method === 'GET' && url.searchParams.has('status')) return json(200, { approved: true, orderId: order.id,
+    emailStatus: await deliveryStatus(env, order.id) });
 
   if (request.method === 'GET') {
     const file = await env.ORGANIZER_INSTALLERS.get(installer);
@@ -126,7 +137,7 @@ export async function onRequest({ request, env }) {
   const machine = (await request.json().catch(() => null))?.machine;
   if (typeof machine !== 'string' || !/^[a-f0-9]{64}$/.test(machine)) return json(400, { error: 'Computador inválido.' });
   const { meta } = await env.ORGANIZER_DB.prepare(
-    'UPDATE organizer_orders SET machine = COALESCE(machine, ?1), second_machine = CASE WHEN machine IS NOT NULL AND machine <> ?1 THEN COALESCE(second_machine, ?1) ELSE second_machine END WHERE id = ?2 AND payment_id IS NOT NULL AND (machine IS NULL OR machine = ?1 OR second_machine IS NULL OR second_machine = ?1)',
+    'UPDATE organizer_orders SET machine = COALESCE(machine, ?1), second_machine = CASE WHEN machine IS NOT NULL AND machine <> ?1 THEN COALESCE(second_machine, ?1) ELSE second_machine END WHERE id = ?2 AND payment_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM organizer_access_blocks WHERE order_id = organizer_orders.id) AND (machine IS NULL OR machine = ?1 OR second_machine IS NULL OR second_machine = ?1)',
   ).bind(machine, order.id).run();
   if (!meta.changes) return json(409, { error: 'A licença já foi ativada em dois computadores.' });
 

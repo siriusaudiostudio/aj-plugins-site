@@ -4,6 +4,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { readFileSync } from 'node:fs';
 import { deliverOrder, deliveryMessage } from '../server/organizer-email.js';
 import { onRequest } from '../functions/api/organizer.js';
+import { deliveryStatus } from '../server/organizer-recovery.js';
 
 const orderId = '11111111-1111-4111-8111-111111111111';
 const originalToken = 'a'.repeat(64);
@@ -12,10 +13,12 @@ async function fixture() {
   const db = new DatabaseSync(':memory:');
   db.exec(readFileSync(new URL('../db/organizer-orders.sql', import.meta.url), 'utf8'));
   db.exec(readFileSync(new URL('../db/organizer-email.sql', import.meta.url), 'utf8'));
+  db.exec(readFileSync(new URL('../db/organizer-recovery.sql', import.meta.url), 'utf8'));
   db.prepare('INSERT INTO organizer_orders VALUES (?, ?, ?, ?, ?, ?, ?)').run(orderId, await sha(originalToken), '<Cliente>', 'buyer@example.com', '123', '1'.repeat(64), '2'.repeat(64));
   const env = {
     ORGANIZER_DB: { prepare(sql) { return { bind(...args) { return {
       async first() { return db.prepare(sql).get(...args); },
+      async all() { return { results: db.prepare(sql).all(...args) }; },
       async run() { return { meta: db.prepare(sql).run(...args) }; },
     }; } }; } },
     ORGANIZER_EMAIL_ENABLED: 'true', ORGANIZER_DELIVERY_KEY: '3'.repeat(64),
@@ -93,6 +96,11 @@ test('signed webhook: pending sends nothing, approved sends, invalid signature r
     assert.equal(emails, 1);
     await onRequest({ env, request: request() });
     assert.equal(emails, 1);
+    status = 'refunded';
+    await onRequest({ env, request: request() });
+    assert.equal((await onRequest({ env, request: new Request('https://example.com/api/organizer?status', { headers: { Authorization: 'Bearer ' + originalToken } }) })).status, 403);
+    assert.equal((await deliverOrder(env, orderId, { resend: true })).state, 'unpaid');
+    assert.equal(db.prepare('SELECT machine FROM organizer_orders').get().machine, '1'.repeat(64));
     assert.equal((await onRequest({ env, request: new Request('https://example.com/api/organizer?webhook&data.id=123', { method: 'POST' }) })).status, 401);
   } finally { globalThis.fetch = priorFetch; db.close(); }
 });
@@ -101,4 +109,47 @@ test('email template never embeds executable or machine-specific fake license', 
   const message = deliveryMessage({ id: orderId, buyer_name: 'Cliente', buyer_email: 'buyer@example.com' }, originalToken, 'https://example.com');
   assert.ok(message.textContent.includes('até dois computadores'));
   assert.ok(message.textContent.includes('arquivo de licença é gerado para cada computador'));
+});
+
+test('recovery sends only to stored buyer, keeps credential and two-PC limit, throttles repeats', async () => {
+  const { db, env } = await fixture();
+  const oldFetch = globalThis.fetch;
+  const sent = [];
+  globalThis.fetch = async (_url, options) => { sent.push(JSON.parse(options.body)); return Response.json({ messageId: 'recovery-' + sent.length }, { status: 201 }); };
+  const pending = [];
+  const request = (email, origin = 'https://example.com') => onRequest({ env, waitUntil: p => pending.push(p), request: new Request('https://example.com/api/organizer?recover', {
+    method: 'POST', headers: { Origin: origin, 'CF-Connecting-IP': '192.0.2.1' }, body: JSON.stringify({ email, recipient: 'attacker@example.com' }),
+  }) });
+  try {
+    await deliverOrder(env, orderId);
+    const before = db.prepare('SELECT * FROM organizer_delivery').get();
+    db.exec("UPDATE organizer_delivery SET sent_at = '2020-01-01T00:00:00.000Z'");
+    const response = await request('BUYER@example.com');
+    assert.equal(response.status, 202);
+    const generic = await response.text();
+    await Promise.all(pending);
+    assert.equal(sent.length, 2);
+    assert.equal(sent[1].to[0].email, 'buyer@example.com');
+    assert.equal(sent[0].textContent, sent[1].textContent);
+    assert.equal(db.prepare('SELECT access_hash FROM organizer_delivery').get().access_hash, before.access_hash);
+    assert.equal(db.prepare('SELECT second_machine FROM organizer_orders').get().second_machine, '2'.repeat(64));
+    assert.equal(await (await request('missing@example.com')).text(), generic);
+    await request('buyer@example.com'); await Promise.all(pending);
+    assert.equal(sent.length, 2);
+    assert.equal((await request('buyer@example.com', 'https://evil.example')).status, 403);
+  } finally { globalThis.fetch = oldFetch; db.close(); }
+});
+
+test('provider acceptance is not delivery; delivered and blocked have distinct states', async () => {
+  const { db, env } = await fixture();
+  const oldFetch = globalThis.fetch;
+  try {
+    globalThis.fetch = async () => Response.json({ messageId: 'status-message' }, { status: 201 });
+    await deliverOrder(env, orderId);
+    for (const [event, expected] of [['requests', 'accepted'], ['delivered', 'delivered'], ['hardBounces', 'blocked'], ['deferred', 'deferred']]) {
+      db.exec('DELETE FROM organizer_email_status');
+      globalThis.fetch = async () => Response.json({ events: [{ event }] });
+      assert.equal(await deliveryStatus(env, orderId), expected);
+    }
+  } finally { globalThis.fetch = oldFetch; db.close(); }
 });
