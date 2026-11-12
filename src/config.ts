@@ -106,7 +106,7 @@ export const products = [
   },
   {
     slug: 'organizador-pro', name: 'AJ Organizer Pro', status: 'Em breve', icon: FolderTree,
-    description: 'Organize seus VS no REAPER em menos tempo, com ajuda da inteligência artificial. Adicione pastas, ZIPs ou RARs, revise os destinos dos stems e importe as músicas prontas em ordem.',
+    description: 'Organize seus VS no REAPER com IA para estimar o BPM quando ele não estiver informado e analisar os sons dos stems para reconhecer instrumentos e sugerir pistas de destino. Adicione pastas, ZIPs ou RARs, revise os destinos dos stems e importe as músicas prontas em ordem.',
     version: '0.2.80',
     requirements: 'Windows 64 bits. Requer REAPER e ativação no computador.',
     category: 'Ferramenta para REAPER',
@@ -126,7 +126,7 @@ export const products = [
       { title: 'Reconhecimento de instrumentos e destinos', items: [
         'Analise as pistas da sessão aberta no REAPER, incluindo canais soltos e canais organizados em pastas.',
         'Identifique instrumentos por nomes, abreviações e aliases. Indicações como Solo, L e R ajudam a localizar um destino compatível.',
-        'Quando o nome for insuficiente, a IA YAMNet analisa o áudio localmente para identificar a família do instrumento e ajudar o Organizer a sugerir uma pista de destino. O destino pode ser preenchido automaticamente quando o reconhecimento e as regras da sessão indicarem uma opção compatível e inequívoca.',
+        'Quando o nome for insuficiente, a IA analisa o áudio localmente para identificar a família do instrumento e ajudar o Organizer a sugerir uma pista de destino. O destino pode ser preenchido automaticamente quando o reconhecimento e as regras da sessão indicarem uma opção compatível e inequívoca.',
         'Pesquise e altere destinos entre as pistas reais da sessão. Filtre por família ou consulte todas as pistas.',
         'Aplique um destino a vários arquivos, ignore áudios do lote, autorize stems a compartilhar uma pista ou crie um canal quando faltar um destino.',
         'Aplique a escolha apenas à importação atual ou salve aliases, vínculos e regras para os próximos lotes.',
