@@ -176,6 +176,7 @@ function Product({ product, state }: { product: CatalogProduct; state: ReleaseSt
         <p className="release-notes">{entry.body || 'Sem notas de atualização.'}</p></details>)}</> :
         <p>{isBrowser && state.loading ? 'Consultando versões…' : 'O histórico ficará disponível com as versões publicadas.'}</p>}
     </section>
+    {isBrowser && <Feedback/>}
   </div>;
 }
 
@@ -192,7 +193,6 @@ function Support() {
         {contacts.length ? <ul className="features">{contacts.map(({label, href}) => <li key={label}><a className="text-link" href={href}>{label}<ArrowUpRight size={16}/></a></li>)}</ul> : <p>Os canais de atendimento ainda estão em preparação.</p>}
       </section>
     </div>
-    <Feedback/>
   </div>;
 }
 
