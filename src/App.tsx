@@ -10,7 +10,7 @@ const productPath = (product: CatalogProduct) => '/produtos/' + product.slug + '
 const nav = [['Início', '/'], ['Produtos', '/produtos/'], ['Sobre', '/sobre/'], ['Suporte', '/suporte/']];
 export const pages = [
   { path: '/', title: site.slogan, description: site.description },
-  { path: '/produtos/', title: 'Produtos', description: 'Explore o AJ Plugin Browser e o Organizador Pro para REAPER.' },
+  { path: '/produtos/', title: 'Produtos', description: 'Explore o AJ Plugin Browser e o AJ Organizer Pro para REAPER.' },
   ...products.map(product => ({ path: productPath(product), title: product.name, description: product.description })),
   { path: '/sobre/', title: 'Sobre', description: 'Conheça a AJ Plugins e suas ferramentas para REAPER.' },
   { path: '/suporte/', title: 'Suporte', description: 'Instalação, atualizações, requisitos e ajuda para ferramentas AJ Plugins.' },
@@ -162,6 +162,13 @@ function Product({ product, state }: { product: CatalogProduct; state: ReleaseSt
     {isBrowser && <section className="workflow" aria-labelledby="workflow-title"><h2 id="workflow-title">Como funciona</h2>
       <ol className="steps">{browser.steps.map((step, index) => <li key={step}><span aria-hidden="true">0{index + 1}</span>{step}</li>)}</ol>
     </section>}
+    {product.slug === 'organizador-pro' && <section className="workflow" aria-labelledby="organizer-workflow">
+      <h2 id="organizer-workflow">Da pasta de stems à sessão de VS</h2>
+      <ul className="steps">{product.features.map(feature => <li key={feature.title}>
+        <strong>{feature.title}</strong>
+        {feature.description}
+      </li>)}</ul>
+    </section>}
     <div className="product-resources">
       {isBrowser ? <section className="card"><h2>Requisitos e instalação</h2>
         <ul className="features">{release.requirements.map(requirement => <li key={requirement}><Check size={16}/>{requirement}</li>)}</ul>
@@ -208,7 +215,7 @@ export function App({ path }: { path: string }) {
       {path === '/' ? <Home state={state}/> : path === '/produtos/' ? <Catalog state={state}/> :
         product ? <Product product={product} state={state}/> : path === '/moderacao/' ? <Moderation/> : path === '/suporte/' ? <Support/> :
         path === '/sobre/' ? <section className="wrap interior"><Intro label="AJ PLUGINS" title="Sobre a AJ Plugins" description="Desenvolvemos scripts e ferramentas para quem produz, edita, mixa e masteriza áudio no REAPER."/>
-          <div className="card about"><AudioLines size={30}/><h2>Menos tarefas repetitivas no REAPER</h2><p>O AJ Plugin Browser é dedicado à busca e à organização de plugins. O Organizador Pro está em desenvolvimento para ajudar na preparação de sessões, com foco na organização de faixas e arquivos de áudio.</p><a className="text-link" href="/produtos/">Explorar produtos <ArrowRight size={17}/></a></div>
+          <div className="card about"><AudioLines size={30}/><h2>Menos tarefas repetitivas no REAPER</h2><p>O AJ Plugin Browser é dedicado à busca e à organização de plugins. O AJ Organizer Pro está em desenvolvimento para ajudar na preparação de sessões, com foco na organização de faixas e arquivos de áudio.</p><a className="text-link" href="/produtos/">Explorar produtos <ArrowRight size={17}/></a></div>
         </section> : <section className="wrap interior"><Intro label="ERRO 404" title="Página não encontrada" description="O endereço solicitado pode ter mudado ou estar incorreto."/><a className="button primary" href="/"><ArrowLeft size={16}/> Voltar ao início</a></section>}
     </main>
     <footer className="footer"><div className="wrap footer-inner"><div><Brand/><p>{site.slogan}</p></div><nav aria-label="Navegação do rodapé">{nav.slice(1).map(([label, href]) => <a href={href} key={href}>{label}</a>)}</nav><small>© AJ Plugins</small></div></footer>

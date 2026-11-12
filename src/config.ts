@@ -105,10 +105,15 @@ export const products = [
     screenshots,
   },
   {
-    slug: 'organizador-pro', name: 'Organizador Pro', status: 'Em breve', icon: FolderTree,
-    description: 'Organize faixas, arquivos de áudio e projetos com ferramentas desenvolvidas para otimizar a preparação de sessões no REAPER.',
+    slug: 'organizador-pro', name: 'AJ Organizer Pro', status: 'Em breve', icon: FolderTree,
+    description: 'Prepare sessões de VS no REAPER. Reúna os stems, revise a faixa de destino de cada áudio e importe as músicas em ordem.',
     category: 'Ferramenta para REAPER',
-    action: 'Conhecer o Organizador Pro',
+    action: 'Conhecer o AJ Organizer Pro',
+    features: [
+      { title: 'Importe stems', description: 'Reúna os arquivos de áudio de cada música e prepare vários VS em uma fila de importação.' },
+      { title: 'Organize por família de instrumentos', description: 'Revise a classificação dos áudios e escolha em quais pistas do projeto eles serão importados.' },
+      { title: 'Monte a sessão do repertório', description: 'Importe as músicas revisadas na ordem da fila e crie regiões no projeto para navegar entre elas.' },
+    ],
   },
 ] as const;
 
