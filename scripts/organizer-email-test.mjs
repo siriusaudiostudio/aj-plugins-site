@@ -4,6 +4,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { readFileSync } from 'node:fs';
 import { deliverOrder, deliveryMessage } from '../server/organizer-email.js';
 import { onRequest } from '../functions/api/organizer.js';
+import { onRequest as manageOrders } from '../functions/api/organizer-orders.js';
 import { deliveryStatus } from '../server/organizer-recovery.js';
 
 const orderId = '11111111-1111-4111-8111-111111111111';
@@ -59,6 +60,49 @@ test('paid delivery, encrypted credential, retries and access controls', async (
     assert.equal((await deliverOrder(env, orderId)).state, 'unpaid');
     assert.equal((await onRequest({ env, request: new Request('https://example.com/api/organizer?status', { headers: { Authorization: 'Bearer ' + token } }) })).status, 403);
     assert.equal((await onRequest({ env, request: new Request('https://example.com/api/organizer?delivery', { method: 'POST', body: JSON.stringify({ orderId }) }) })).status, 401);
+  } finally { globalThis.fetch = priorFetch; db.close(); }
+});
+
+test('admin searches by email or order and resends existing access only to the buyer', async () => {
+  const { db, env } = await fixture();
+  db.exec(readFileSync(new URL('../db/organizer-metrics.sql', import.meta.url), 'utf8'));
+  env.FEEDBACK_ADMIN_TOKEN = 'admin-test-credential'.repeat(2);
+  const admin = (action, query, token = env.FEEDBACK_ADMIN_TOKEN, origin = 'https://example.com') => manageOrders({
+    env, request: new Request('https://example.com/api/organizer-orders', {
+      method: 'POST', headers: { Authorization: 'Bearer ' + token, Origin: origin },
+      body: JSON.stringify({ action, query, email: 'other@example.com' }),
+    }),
+  });
+  const priorFetch = globalThis.fetch;
+  const sent = [];
+  globalThis.fetch = async (url, options) => {
+    if (url.includes('/statistics/events')) return Response.json({ events: [{ event: 'delivered' }] });
+    sent.push(JSON.parse(options.body));
+    return Response.json({ messageId: 'message-' + sent.length }, { status: 201 });
+  };
+  try {
+    await deliverOrder(env, orderId);
+    await onRequest({ env, request: new Request('https://example.com/api/organizer', { headers: { Authorization: 'Bearer ' + originalToken } }) });
+    assert.equal((await admin('search', orderId, 'wrong')).status, 401);
+    assert.equal((await admin('resend', orderId, env.FEEDBACK_ADMIN_TOKEN, 'https://other.example.com')).status, 403);
+    for (const query of [orderId, ' BUYER@EXAMPLE.COM ']) {
+      const { orders } = await (await admin('search', query)).json();
+      assert.deepEqual(orders, [{ id: orderId, email: 'buyer@example.com', payment: 'approved', emailStatus: 'accepted',
+        emailSentAt: db.prepare('SELECT sent_at FROM organizer_delivery').get().sent_at, activations: 2, downloads: 1 }]);
+    }
+    assert.equal((await (await admin('email', orderId)).json()).order.emailStatus, 'delivered');
+    assert.equal((await admin('resend', orderId)).status, 429);
+    db.exec("UPDATE organizer_delivery SET sent_at = '2020-01-01T00:00:00Z'");
+    assert.equal((await admin('resend', orderId)).status, 200);
+    assert.equal(sent.length, 2);
+    assert.deepEqual(sent[1].to, sent[0].to);
+    assert.equal(sent[1].textContent, sent[0].textContent);
+    assert.deepEqual({ ...db.prepare('SELECT machine, second_machine FROM organizer_orders').get() },
+      { machine: '1'.repeat(64), second_machine: '2'.repeat(64) });
+    db.prepare("INSERT INTO organizer_access_blocks VALUES (?, 'refunded', '2020-01-01T00:00:00Z')").run(orderId);
+    assert.equal((await (await admin('search', orderId)).json()).orders[0].payment, 'refunded');
+    assert.equal((await admin('resend', orderId)).status, 409);
+    assert.equal(sent.length, 2);
   } finally { globalThis.fetch = priorFetch; db.close(); }
 });
 

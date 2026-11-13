@@ -200,3 +200,7 @@ details[open] summary svg{transform:rotate(180deg)}
 .organizer-metrics-counts { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,170px),1fr)); gap:12px; }
 .organizer-metrics-counts div { padding:14px; border:1px solid var(--border); border-radius:10px; }
 .organizer-metrics-counts dd { margin:6px 0 0; font-size:1.65rem; color:var(--gold); font-weight:750; }
+.organizer-orders summary, .organizer-orders dd { overflow-wrap:anywhere; }
+.organizer-orders dl { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr)); gap:12px; }
+.organizer-orders dt { color:var(--muted); }
+.organizer-orders dd { margin:4px 0 0; }

@@ -132,7 +132,7 @@ export async function onRequest({ request, env, waitUntil }) {
     if (!file) return json(503, { error: 'Instalador indisponível.' });
     const track = Promise.resolve().then(() => env.ORGANIZER_DB.prepare(
       "INSERT INTO organizer_metric_events VALUES ('download', ?, ?)",
-    ).bind(crypto.randomUUID(), new Date().toISOString()).run()).catch(() => {
+    ).bind(order.id + ':' + crypto.randomUUID(), new Date().toISOString()).run()).catch(() => {
       console.error('Não foi possível registrar a entrega do instalador.');
     });
     if (waitUntil) waitUntil(track);

@@ -80,7 +80,8 @@ export async function deliverOrder(env, orderId, { resend = false } = {}) {
       .bind(safeError, orderId, lease).run();
     throw new Error(safeError);
   }
+  const sentAt = new Date().toISOString();
   await env.ORGANIZER_DB.prepare("UPDATE organizer_delivery SET state = 'sent', provider_id = ?, sent_at = ?, last_error = NULL, lease_until = 0 WHERE order_id = ? AND lease_until = ?")
-    .bind(providerId, new Date().toISOString(), orderId, lease).run();
-  return { state: 'sent' }; // Provider acceptance is not proof of inbox delivery.
+    .bind(providerId, sentAt, orderId, lease).run();
+  return { state: 'sent', sentAt }; // Provider acceptance is not proof of inbox delivery.
 }
