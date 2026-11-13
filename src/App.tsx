@@ -167,6 +167,7 @@ function Product({ product, state }: { product: CatalogProduct; state: ReleaseSt
       <a className="text-link" href="/produtos/"><ArrowLeft size={16}/> Todos os produtos</a>
       {product.slug === 'organizador-pro' && <><a className="text-link" href="#capturas">Capturas de tela</a><a className="text-link" href="#videos">Vídeos</a><a className="text-link" href="#recursos">Recursos</a></>}
       {organizerCheckout && !isBrowser && <a className="text-link" href="#licenca">Licença e compra</a>}
+      {organizerCheckout && !isBrowser && <a className="text-link" href="#guia-organizer">Instalação e acesso</a>}
       <a className="text-link" href="#comentarios">Comentários e sugestões</a>
     </nav>
     <section className="product-intro">
@@ -236,6 +237,14 @@ function Product({ product, state }: { product: CatalogProduct; state: ReleaseSt
         {documentation && <a className="text-link" href={documentation}>Documentação <ArrowUpRight size={16}/></a>}
       </section>}
     </div>
+    {product.slug === 'organizador-pro' && organizerCheckout && <section className="workflow" id="guia-organizer" aria-labelledby="organizer-guide-title">
+      <h2 id="organizer-guide-title">Como instalar, ativar e recuperar seu acesso</h2>
+      <ol className="steps">
+        <li><strong>1. Instale no Windows</strong><p>Após a aprovação do pagamento, abra o link privado do pedido recebido por e-mail e clique em <strong>Baixar instalador</strong>. Feche o REAPER, execute o instalador e siga as instruções na tela.</p></li>
+        <li><strong>2. Ative no REAPER</strong><p>Abra o REAPER e execute o AJ Organizer Pro. Na tela de ativação, cole o código recebido por e-mail e clique em <strong>Ativar com código</strong>. A licença vitalícia pode ser ativada em até dois computadores.</p></li>
+        <li><strong>3. Recupere seu acesso</strong><p>Abra <strong>Já comprei</strong> na <a className="text-link" href="#licenca">seção de licença</a>. Se tiver o código, use <strong>Acessar com código</strong> para baixar novamente. Se precisar do código ou do link, informe o e-mail usado na compra e clique em <strong>Reenviar acesso por e-mail</strong>.</p></li>
+      </ol>
+    </section>}
     <section className="card history"><span className="eyebrow">VERSÕES</span><h2>Histórico de atualizações</h2>
       {isBrowser && latest ? <><p>Versão pública: <strong>{latest.tag_name}</strong></p>{state.history.map(entry => <details key={entry.tag_name}>
         <summary>{entry.tag_name} · {new Intl.DateTimeFormat('pt-BR', { timeZone: 'UTC' }).format(new Date(entry.published_at))}<ChevronDown size={17}/></summary>
