@@ -249,7 +249,7 @@ function Product({ product, state }: { product: CatalogProduct; state: ReleaseSt
 function Support() {
   const contacts = Object.entries(site.contacts).flatMap(([label, value]) => {
     const href = safeLink(value, label === 'E-mail');
-    return href ? [{ label, href }] : [];
+    return href ? [{ label: label === 'E-mail' ? href.slice('mailto:'.length) : label, href }] : [];
   });
   return <div className="wrap interior">
     <Intro label="CENTRAL DE AJUDA" title="Suporte" description="Orientações para instalar, atualizar e usar as ferramentas da AJ Plugins no REAPER."/>

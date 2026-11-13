@@ -4,8 +4,8 @@ export const site = {
   name: 'AJ Plugins',
   slogan: 'Ferramentas inteligentes para REAPER',
   description: 'Conheça as ferramentas da AJ Plugins para organizar plugins, otimizar projetos e acelerar seu workflow no REAPER.',
-  origin: '', // Informe a URL pública confirmada, sem barra final.
-  contacts: { Instagram: '', YouTube: '', WhatsApp: '', 'E-mail': '', 'Relatar um bug': '' },
+  origin: 'https://ajplugins.com.br',
+  contacts: { Instagram: '', YouTube: '', WhatsApp: '', 'E-mail': 'mailto:siriusaudiostudio@gmail.com', 'Relatar um bug': '' },
 };
 
 export const release = {

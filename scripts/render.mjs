@@ -4,6 +4,7 @@ import { pages, render, site } from '../.static-build/static.js';
 
 const template = await readFile('dist/index.html', 'utf8');
 const escape = value => value.replace(/[&"<>]/g, char => ({ '&': '&amp;', '"': '&quot;', '<': '&lt;', '>': '&gt;' })[char]);
+const isIndexable = page => page.path !== '/404.html' && page.path !== '/moderacao/';
 
 for (const page of pages) {
   const missing = page.path === '/404.html';
@@ -22,10 +23,25 @@ for (const page of pages) {
     !missing && '<meta property="og:image" content="' + (site.origin ? escape(new URL('/social.png', site.origin).href) : '/social.png') + '">',
     !missing && '<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">',
     !missing && '<meta property="og:image:alt" content="AJ Plugins — Ferramentas inteligentes para REAPER">',
-    !(missing || page.path === '/moderacao/') && '<meta name="twitter:card" content="summary_large_image">',
-    (missing || page.path === '/moderacao/') && '<meta name="robots" content="noindex">',
+    isIndexable(page) && '<meta name="twitter:card" content="summary_large_image">',
+    !isIndexable(page) && '<meta name="robots" content="noindex">',
   ].filter(Boolean).join('\n');
   const file = 'dist' + page.path + (missing ? '' : 'index.html');
   await mkdir(dirname(file), { recursive: true });
   await writeFile(file, template.replace('<!-- metadata -->', () => metadata).replace('<!-- app -->', () => render(page.path)));
+}
+
+if (site.origin) {
+  const urls = pages.filter(isIndexable).map(page => {
+    const url = escape(new URL(page.path, site.origin).href);
+    return '  <url><loc>' + url + '</loc></url>';
+  });
+  await writeFile('dist/sitemap.xml', [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ...urls,
+    '</urlset>',
+    '',
+  ].join('\n'));
+  await writeFile('dist/robots.txt', 'User-agent: *\nAllow: /\nSitemap: ' + new URL('/sitemap.xml', site.origin).href + '\n');
 }
