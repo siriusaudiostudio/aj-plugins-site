@@ -170,6 +170,9 @@ details[open] summary svg{transform:rotate(180deg)}
 .moderation [aria-pressed="true"]{border-color:var(--gold);color:var(--gold)}
 .feedback-form button:disabled,.moderation button:disabled{opacity:.6;cursor:wait}
 .organizer-price { display: grid; gap: .25rem; margin: 1rem 0; }
+.organizer-offer { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px 24px; padding:clamp(18px,3vw,28px); margin-bottom:32px; border:1px solid #5b4b24; border-radius:13px; background:#1d1a13; }
+.organizer-offer h2 { font-size:clamp(1.15rem,2.6vw,1.65rem); }
+.organizer-offer p { margin-top:6px; }
 .organizer-price strong { font-size: 2rem; color: #e9ba56; }
 #licenca details { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #34343a; }
 #licenca summary { cursor: pointer; font-weight: 600; }

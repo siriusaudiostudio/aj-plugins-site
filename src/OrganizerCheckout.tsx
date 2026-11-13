@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
+import { organizerPrice } from './config';
 
 const api = '/api/organizer';
 const storageKey = 'aj-organizer-order';
@@ -105,7 +106,7 @@ export function OrganizerCheckout() {
   }
 
   return <>
-    <div className="organizer-price"><strong>R$ 19,90</strong><span>Pagamento único · Até dois computadores</span></div>
+    <div className="organizer-price"><strong>{organizerPrice}</strong><span>Pagamento único · Até dois computadores</span></div>
     {token ? <>
       <button className="button primary" disabled={busy} onClick={() => void check(approved)}>
         {busy ? (approved ? 'Processando…' : 'Verificando…') : approved ? 'Baixar instalador' : 'Verificar pagamento'}

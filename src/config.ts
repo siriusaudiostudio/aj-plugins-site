@@ -27,6 +27,9 @@ export const commerce = {
   model: ['Licença vitalícia', 'Pagamento único', 'Sem assinatura recorrente'],
 };
 
+export const organizerPrice = commerce.priceBRL === null ? '' :
+  new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(commerce.priceBRL);
+
 export const organizerScreenshots = [
   ['destinos', 'Destinos das faixas', 'Confira os destinos reconhecidos, ouça os áudios e ajuste o que for preciso antes de importar.', 'Tabela de stems com destinos sugeridos e botões para ouvir o áudio ou alterar a pista.'],
   ['arquivos', 'Arquivos e fila', 'Selecione uma pasta ou um arquivo ZIP ou RAR e organize os VS na fila.', 'Painéis de seleção de arquivos, destinos dos áudios e fila de VS.'],

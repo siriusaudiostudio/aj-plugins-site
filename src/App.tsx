@@ -1,7 +1,7 @@
 import { OrganizerCheckout } from './OrganizerCheckout';
 import { useEffect, useState } from 'react';
 import { ArrowDownToLine, ArrowLeft, ArrowRight, ArrowUpRight, AudioLines, Check, ChevronDown, CircleHelp, Menu, X } from 'lucide-react';
-import { commerce, faq, organizerScreenshots, products, release, site } from './config';
+import { commerce, faq, organizerPrice, organizerScreenshots, products, release, site } from './config';
 import { Feedback, Moderation } from './Feedback';
 import { ScreenshotGallery } from './ScreenshotGallery';
 
@@ -109,7 +109,8 @@ function Catalog({ state, home = false }: { state: ReleaseState; home?: boolean 
         {product === browser ? <><p className="card-highlight">{browser.highlight}</p><ScreenshotGallery variant="cover"/></> :
           <><ul className="features">{commerce.model.map(item => <li key={item}><Check size={15}/>{item}</li>)}</ul><ScreenshotGallery variant="cover" screenshots={organizerScreenshots} productName={product.name} captureVersion={organizerCaptureVersion}/></>}
         <div className="card-actions">{product === browser && <Download state={state}/>}
-        <a className={product === browser ? 'text-link' : 'button secondary'} href={productPath(product)}>{product.action} <ArrowRight size={16}/></a></div>
+        {product.slug === 'organizador-pro' && organizerCheckout && <a className="button primary" href={productPath(product) + '#licenca'}>Comprar por {organizerPrice} <ArrowRight size={16}/></a>}
+        <a className={product === browser || organizerCheckout ? 'text-link' : 'button secondary'} href={productPath(product)}>{product.action} <ArrowRight size={16}/></a></div>
       </article>)}</div>
     </div>
   </section>;
@@ -158,6 +159,13 @@ function Product({ product, state }: { product: CatalogProduct; state: ReleaseSt
         {product.slug === 'organizador-pro' && <p className="muted">Versão {product.version} · {product.requirements}</p>}
       </div>
     </section>
+    {!isBrowser && organizerCheckout && <section className="organizer-offer" aria-labelledby="organizer-offer-title">
+      <div>
+        <h2 id="organizer-offer-title">Adquira já o seu AJ Organizer Pro</h2>
+        <p>Licença vitalícia para até dois computadores. Pagamento único por Pix ou cartão.</p>
+      </div>
+      <a className="button primary" href="#licenca">Comprar por {organizerPrice} <ArrowRight size={16}/></a>
+    </section>}
     {isBrowser && <section className="interface-section" aria-labelledby="interface-title">
       <div><span className="eyebrow">VISÃO DO PRODUTO</span><h2 id="interface-title">Explore o AJ Plugin Browser</h2>
         <p>Conheça a interface do AJ Plugin Browser e descubra uma maneira mais prática de visualizar, pesquisar e organizar seus plugins no REAPER.</p>
@@ -172,7 +180,7 @@ function Product({ product, state }: { product: CatalogProduct; state: ReleaseSt
       <div>
         <h2 id="organizer-screenshots">Veja o Organizer Pro em ação</h2>
         <p>Da seleção dos áudios à revisão das pistas, veja como preparar um VS antes de importar no REAPER.</p>
-        {organizerCheckout && <a className="button secondary" href="#licenca">Ver licença e compra <ArrowRight size={16}/></a>}
+        {organizerCheckout && <a className="button secondary" href="#licenca">Comprar por {organizerPrice} <ArrowRight size={16}/></a>}
       </div>
       <ScreenshotGallery screenshots={organizerScreenshots} productName={product.name} captureVersion={organizerCaptureVersion}/>
     </section>}
