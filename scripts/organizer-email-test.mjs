@@ -109,6 +109,11 @@ test('email template never embeds executable or machine-specific fake license', 
   const message = deliveryMessage({ id: orderId, buyer_name: 'Cliente', buyer_email: 'buyer@example.com' }, originalToken, 'https://example.com');
   assert.ok(message.textContent.includes('até dois computadores'));
   assert.ok(message.textContent.includes('arquivo de licença é gerado para cada computador'));
+  const privateLink = 'https://example.com/produtos/organizador-pro/#pedido=' + originalToken;
+  assert.ok(message.textContent.includes(privateLink));
+  assert.ok(message.htmlContent.includes('href="' + privateLink + '"'));
+  assert.ok(message.htmlContent.includes('Baixar AJ Organizer Pro'));
+  assert.ok(message.htmlContent.includes('Acessar com código'));
 });
 
 test('recovery sends only to stored buyer, keeps credential and two-PC limit, throttles repeats', async () => {

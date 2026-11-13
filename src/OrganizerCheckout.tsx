@@ -41,6 +41,20 @@ export function OrganizerCheckout() {
     setToken(sessionStorage.getItem(storageKey) ?? '');
   }, []);
 
+  useEffect(() => {
+    if (!token) return;
+    const controller = new AbortController();
+    void fetch(api + '?status', { headers: { Authorization: 'Bearer ' + token }, signal: controller.signal })
+      .then(async response => {
+        if (!response.ok) return;
+        const data = await response.json();
+        if (controller.signal.aborted) return;
+        setOrderId(data.orderId);
+        setApproved(true);
+      }).catch(() => { /* The customer can retry using Verificar pagamento. */ });
+    return () => controller.abort();
+  }, [token]);
+
   async function start(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
@@ -91,10 +105,10 @@ export function OrganizerCheckout() {
   }
 
   return <>
-    <p><strong>R$ 19,90</strong> · Pagamento único</p>
+    <div className="organizer-price"><strong>R$ 19,90</strong><span>Pagamento único · Até dois computadores</span></div>
     {token ? <>
       <button className="button primary" disabled={busy} onClick={() => void check(approved)}>
-        {approved ? 'Baixar instalador' : 'Verificar pagamento'}
+        {busy ? (approved ? 'Processando…' : 'Verificando…') : approved ? 'Baixar instalador' : 'Verificar pagamento'}
       </button>
       {approved && <>
         <p role="status">{emailStatus}</p>
@@ -111,12 +125,29 @@ export function OrganizerCheckout() {
         setNotice('');
       }}>Novo pedido</button>
     </> : <form className="feedback-form" onSubmit={start}>
+      <p>Pague com Pix ou cartão no Mercado Pago. Após a aprovação, você pode baixar o instalador nesta página e recebe o acesso por e-mail.</p>
       <label>Nome<input name="name" required maxLength={100} autoComplete="name"/></label>
       <label>E-mail<input name="email" type="email" required maxLength={254} autoComplete="email"/></label>
-      <button className="button primary" disabled={busy}>Pagar com Mercado Pago</button>
+      <button className="button primary" disabled={busy}>{busy ? 'Aguarde…' : 'Ir para o pagamento'}</button>
     </form>}
     <details>
-      <summary>Já comprei — recuperar meu pedido</summary>
+      <summary>Já comprei</summary>
+      <form className="feedback-form" onSubmit={event => {
+        event.preventDefault();
+        const code = String(new FormData(event.currentTarget).get('accessCode') ?? '').trim().toLowerCase();
+        if (!/^[a-f0-9]{64}$/.test(code)) {
+          setNotice('Confira o código de ativação informado no e-mail.');
+          return;
+        }
+        sessionStorage.setItem(storageKey, code);
+        setApproved(false);
+        setEmailStatus('');
+        setNotice(code === token ? 'Use Verificar pagamento para consultar este pedido novamente.' : '');
+        setToken(code);
+      }}>
+        <label>Código recebido por e-mail<input name="accessCode" required autoComplete="off" spellCheck={false}/></label>
+        <button className="button secondary" disabled={busy}>Acessar com código</button>
+      </form>
       <p>Use o mesmo e-mail informado na compra. O reenvio mantém sua licença e os computadores já ativados.</p>
       <form className="feedback-form" onSubmit={recover}>
         <label>E-mail da compra<input name="recoveryEmail" type="email" required maxLength={254} autoComplete="email"/></label>

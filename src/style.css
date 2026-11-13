@@ -166,3 +166,7 @@ details[open] summary svg{transform:rotate(180deg)}
 .feedback-list li p{white-space:pre-wrap;margin-top:5px}
 .moderation [aria-pressed="true"]{border-color:var(--gold);color:var(--gold)}
 .feedback-form button:disabled,.moderation button:disabled{opacity:.6;cursor:wait}
+.organizer-price { display: grid; gap: .25rem; margin: 1rem 0; }
+.organizer-price strong { font-size: 2rem; color: #e9ba56; }
+#licenca details { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #34343a; }
+#licenca summary { cursor: pointer; font-weight: 600; }

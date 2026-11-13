@@ -12,10 +12,21 @@ async function encryptionKey(env) {
 }
 
 export function deliveryMessage(order, token, origin) {
-  const link = origin + '/produtos/organizador-pro/#pedido=' + token;
-  const text = `Olá, ${order.buyer_name}!\n\nSeu pagamento do AJ Organizer Pro foi aprovado.\n\nCódigo de ativação:\n${token}\n\nDownload privado e acesso ao pedido:\n${link}\n\nAbra o link, clique em Verificar pagamento e depois em Baixar instalador. Após instalar, abra o Organizer no REAPER e use Ativar com código.\n\nSua licença é vitalícia, com pagamento único de R$ 19,90, para até dois computadores. Use o mesmo código em ambos. O arquivo de licença é gerado para cada computador durante a ativação.\n\nGuarde este e-mail e não compartilhe o código ou o link.\nPedido: ${order.id}\n\nAJ Plugins`;
+  const page = origin + '/produtos/organizador-pro/';
+  const link = page + '#pedido=' + token;
+  const activation = 'Após instalar, abra o Organizer no REAPER e use Ativar com código. A licença é vitalícia e vale para até dois computadores. O arquivo de licença é gerado para cada computador durante a ativação.';
+  const fallback = 'Se o botão não abrir seu pedido, acesse a página do produto e use Já comprei → Acessar com código.';
+  const text = `Olá, ${order.buyer_name}!\n\nSeu pagamento do AJ Organizer Pro foi aprovado.\n\nBaixar AJ Organizer Pro ou baixar novamente:\n${link}\n\nNa página privada, selecione Baixar instalador.\n\nCódigo de ativação:\n${token}\n\n${activation}\n\n${fallback}\n${page}\n\nGuarde este e-mail. O código e o link são privados.\nPedido: ${order.id}\n\nAJ Plugins`;
   return { subject: 'AJ Organizer Pro — sua licença e download', textContent: text,
-    htmlContent: '<!doctype html><html lang="pt-BR"><body><div style="font-family:Arial,sans-serif;max-width:640px;margin:auto;line-height:1.6"><h1>Seu AJ Organizer Pro está liberado</h1><p>' + escape(text).replaceAll('\n', '<br>') + '</p><p><a href="' + link + '">Acessar meu download privado</a></p></div></body></html>' };
+    htmlContent: `<!doctype html><html lang="pt-BR"><body><div style="font-family:Arial,sans-serif;max-width:640px;margin:auto;line-height:1.6;padding:24px">
+      <h1>Seu AJ Organizer Pro está liberado</h1>
+      <p>Olá, ${escape(order.buyer_name)}! Seu pagamento foi aprovado.</p>
+      <p><a href="${escape(link)}" style="display:inline-block;background:#e9ba56;color:#17130d;padding:12px 20px;border-radius:8px;font-weight:bold">Baixar AJ Organizer Pro</a></p>
+      <p>O botão abre seu pedido privado. Selecione <strong>Baixar instalador</strong>. Guarde este e-mail para baixar novamente.</p>
+      <h2>Código de ativação</h2><p style="overflow-wrap:anywhere;word-break:break-all"><code>${escape(token)}</code></p>
+      <p>${escape(activation)}</p><p>${escape(fallback)} <a href="${escape(page)}">Abrir página do produto</a>.</p>
+      <p>O código e o link são privados.<br>Pedido: ${escape(order.id)}</p>
+    </div></body></html>` };
 }
 
 // A second credential preserves existing activation codes and the same two-machine allocation.
@@ -56,7 +67,8 @@ export async function deliverOrder(env, orderId, { resend = false } = {}) {
         replyTo: { name: 'AJ Plugins', email: env.ORGANIZER_EMAIL_REPLY_TO || env.ORGANIZER_EMAIL_FROM },
         to: [{ name: order.buyer_name, email: order.buyer_email }],
         headers: { IdempotencyKey: 'organizer-delivery-' + orderId + (resend ? '-recovery-' + Math.floor(now / 900000) : '') },
-        tags: ['organizer-delivery'], ...deliveryMessage(order, token, origin.origin),
+        tags: ['organizer-delivery'],
+        ...deliveryMessage(order, token, origin.hostname === 'ajplugins.pages.dev' ? 'https://ajplugins.com.br' : origin.origin),
       }),
     });
     if (!response.ok) throw new Error('provider_http_' + response.status);

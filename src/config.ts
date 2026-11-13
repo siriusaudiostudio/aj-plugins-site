@@ -11,10 +11,10 @@ export const site = {
 export const release = {
   enabled: true,
   repository: 'siriusaudiostudio/aj-plugin-browser', // proprietário/repositório público
-  asset: 'AJ_Plugin_Browser_Instalador_0.8.3-completo-offline-rc3.exe', // nome exato do arquivo anexado a cada release
+  asset: 'AJ_Plugin_Browser_Instalador_0.8.4-completo-offline-rc3.exe', // nome exato do arquivo anexado a cada release
   platform: 'Windows x64',
   requirements: ['REAPER instalado.', 'Consulte a documentação da versão para verificar sistemas, versões do REAPER e dependências compatíveis.'],
-  manual: 'https://github.com/siriusaudiostudio/aj-plugin-browser/releases/download/v0.8.3/LEIA-ME.md',
+  manual: 'https://github.com/siriusaudiostudio/aj-plugin-browser/releases/download/v0.8.4/LEIA-ME.md',
 };
 
 export const commerce = {
