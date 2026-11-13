@@ -1,6 +1,7 @@
 import { OrganizerCheckout } from './OrganizerCheckout';
 import { useEffect, useState } from 'react';
-import { ArrowDownToLine, ArrowLeft, ArrowRight, ArrowUpRight, AudioLines, Check, ChevronDown, CircleHelp, Menu, Play, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ArrowUpRight, AudioLines, Check, ChevronDown, CircleHelp, Menu, Play, X } from 'lucide-react';
+import { WindowsIcon } from './WindowsIcon';
 import { commerce, faq, organizerPrice, organizerScreenshots, products, release, site } from './config';
 import { Feedback, Moderation } from './Feedback';
 import { ScreenshotGallery } from './ScreenshotGallery';
@@ -95,8 +96,8 @@ function Header({ path }: { path: string }) {
 }
 
 function Download({ state }: { state: ReleaseState }) {
-  return state.url ? <a className="button primary" href={state.url}><ArrowDownToLine size={17} /> Download gratuito</a> :
-    <span className="button unavailable" role="status"><ArrowDownToLine size={17} />{state.loading ? 'Consultando versões…' : 'Download em breve'}</span>;
+  return state.url ? <a className="button primary" href={state.url}><WindowsIcon/> Download para Windows</a> :
+    <span className="button unavailable" role="status"><WindowsIcon/>{state.loading ? 'Consultando versões…' : 'Download em breve'}</span>;
 }
 
 function Intro({ label, title, description }: { label: string; title: string; description: string }) {
@@ -126,6 +127,7 @@ function Catalog({ state, home = false }: { state: ReleaseState; home?: boolean 
       <div className="cards">{products.map(product => <article key={product.slug} className="card">
         <div className="card-top"><span className="product-icon"><product.icon size={23}/></span><span className={'badge ' + (product === browser ? 'free' : '')}>{product !== browser && organizerCheckout ? 'Disponível' : product.status}</span></div>
         <h3>{product.name}</h3><p>{product.description}</p>
+        <p className="muted">Instalador para Windows 64 bits</p>
         {product === browser ? <><p className="card-highlight">{browser.highlight}</p><ScreenshotGallery variant="cover"/></> :
           <><ul className="features">{commerce.model.map(item => <li key={item}><Check size={15}/>{item}</li>)}</ul><ScreenshotGallery variant="cover" screenshots={organizerScreenshots} productName={product.name} captureVersion={organizerCaptureVersion}/></>}
         <div className="card-actions">{product === browser && <Download state={state}/>}
@@ -176,14 +178,14 @@ function Product({ product, state }: { product: CatalogProduct; state: ReleaseSt
         {isBrowser && state.downloads !== null && <p className="muted">
           {state.downloads.toLocaleString('pt-BR')} {state.downloads === 1 ? 'download' : 'downloads'} do instalador desta versão no GitHub
         </p>}
-        {isBrowser && release.platform && <p className="muted">Sistema operacional: {release.platform}</p>}
+        {isBrowser && release.platform && <p className="muted">Instalador gratuito para Windows 64 bits.</p>}
         {product.slug === 'organizador-pro' && <p className="muted">Versão {product.version} · {product.requirements}</p>}
       </div>
     </section>
     {!isBrowser && organizerCheckout && <section className="organizer-offer" aria-labelledby="organizer-offer-title">
       <div>
         <h2 id="organizer-offer-title">Adquira já o seu AJ VS Organizer Pro</h2>
-        <p>Licença vitalícia para até dois computadores. Pagamento único por Pix ou cartão.</p>
+        <p>Instalador para Windows 64 bits. Licença vitalícia para até dois computadores. Pagamento único por Pix ou cartão.</p>
       </div>
       <a className="button primary" href="#licenca">Comprar por {organizerPrice} <ArrowRight size={16}/></a>
     </section>}
@@ -240,7 +242,7 @@ function Product({ product, state }: { product: CatalogProduct; state: ReleaseSt
     {product.slug === 'organizador-pro' && organizerCheckout && <section className="workflow" id="guia-organizer" aria-labelledby="organizer-guide-title">
       <h2 id="organizer-guide-title">Como instalar, ativar e recuperar seu acesso</h2>
       <ol className="steps">
-        <li><strong>1. Instale no Windows</strong><p>Após a aprovação do pagamento, abra o link privado do pedido recebido por e-mail e clique em <strong>Baixar instalador</strong>. Feche o REAPER, execute o instalador e siga as instruções na tela.</p></li>
+        <li><strong>1. Instale no Windows</strong><p>Após a aprovação do pagamento, abra o link privado do pedido recebido por e-mail e clique em <strong>Download para Windows</strong>. Feche o REAPER, execute o instalador e siga as instruções na tela.</p></li>
         <li><strong>2. Ative no REAPER</strong><p>Abra o REAPER e execute o script, que na versão 0.2.80 aparece como <strong>AJ Organizer Pro</strong>. Na tela de ativação, cole o código recebido por e-mail e clique em <strong>Ativar com código</strong>. A licença vitalícia pode ser ativada em até dois computadores.</p></li>
         <li><strong>3. Recupere seu acesso</strong><p>Abra <strong>Já comprei</strong> na <a className="text-link" href="#licenca">seção de licença</a>. Se tiver o código, use <strong>Acessar com código</strong> para baixar novamente. Se precisar do código ou do link, informe o e-mail usado na compra e clique em <strong>Reenviar acesso por e-mail</strong>.</p></li>
       </ol>

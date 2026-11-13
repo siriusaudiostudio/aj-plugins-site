@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
 import { organizerPrice } from './config';
+import { WindowsIcon } from './WindowsIcon';
 
 const api = '/api/organizer';
 const storageKey = 'aj-organizer-order';
@@ -109,7 +110,8 @@ export function OrganizerCheckout() {
     <div className="organizer-price"><strong>{organizerPrice}</strong><span>Pagamento único · Até dois computadores</span></div>
     {token ? <>
       <button className="button primary" disabled={busy} onClick={() => void check(approved)}>
-        {busy ? (approved ? 'Processando…' : 'Verificando…') : approved ? 'Baixar instalador' : 'Verificar pagamento'}
+        {approved && <WindowsIcon/>}
+        {busy ? (approved ? 'Processando…' : 'Verificando…') : approved ? 'Download para Windows' : 'Verificar pagamento'}
       </button>
       {approved && <>
         <p role="status">{emailStatus}</p>
