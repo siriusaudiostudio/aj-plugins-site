@@ -6,6 +6,7 @@ import { Feedback, Moderation } from './Feedback';
 import { ScreenshotGallery } from './ScreenshotGallery';
 
 const browser = products[0];
+const organizerCaptureVersion = '0.2.80';
 const organizerCheckout = import.meta.env.VITE_ORGANIZER_CHECKOUT === 'true';
 type CatalogProduct = (typeof products)[number];
 const productPath = (product: CatalogProduct) => '/produtos/' + product.slug + '/';
@@ -103,10 +104,10 @@ function Catalog({ state, home = false }: { state: ReleaseState; home?: boolean 
       {home ? <div className="section-head"><div><span className="eyebrow">CATÁLOGO</span><h2>Ferramentas para o seu workflow</h2></div><a className="text-link" href="/produtos/">Ver todos os produtos <ArrowRight size={17}/></a></div> :
         <Intro label="CATÁLOGO" title="Produtos" description="Conheça as ferramentas da AJ Plugins para o seu fluxo de trabalho no REAPER." />}
       <div className="cards">{products.map(product => <article key={product.slug} className="card">
-        <div className="card-top"><span className="product-icon"><product.icon size={23}/></span><span className={'badge ' + (product === browser ? 'free' : '')}>{product.status}</span></div>
+        <div className="card-top"><span className="product-icon"><product.icon size={23}/></span><span className={'badge ' + (product === browser ? 'free' : '')}>{product !== browser && organizerCheckout ? 'Disponível' : product.status}</span></div>
         <h3>{product.name}</h3><p>{product.description}</p>
         {product === browser ? <><p className="card-highlight">{browser.highlight}</p><ScreenshotGallery variant="cover"/></> :
-          <ul className="features">{commerce.model.map(item => <li key={item}><Check size={15}/>{item}</li>)}</ul>}
+          <><ul className="features">{commerce.model.map(item => <li key={item}><Check size={15}/>{item}</li>)}</ul><ScreenshotGallery variant="cover" screenshots={organizerScreenshots} productName={product.name} captureVersion={organizerCaptureVersion}/></>}
         <div className="card-actions">{product === browser && <Download state={state}/>}
         <a className={product === browser ? 'text-link' : 'button secondary'} href={productPath(product)}>{product.action} <ArrowRight size={16}/></a></div>
       </article>)}</div>
@@ -173,7 +174,7 @@ function Product({ product, state }: { product: CatalogProduct; state: ReleaseSt
         <p>Da seleção dos áudios à revisão das pistas, veja como preparar um VS antes de importar no REAPER.</p>
         {organizerCheckout && <a className="button secondary" href="#licenca">Ver licença e compra <ArrowRight size={16}/></a>}
       </div>
-      <ScreenshotGallery screenshots={organizerScreenshots} productName={product.name} captureVersion="0.2.80"/>
+      <ScreenshotGallery screenshots={organizerScreenshots} productName={product.name} captureVersion={organizerCaptureVersion}/>
     </section>}
     {product.slug === 'organizador-pro' && <section className="workflow" aria-labelledby="organizer-workflow">
       <h2 id="organizer-workflow">Da pasta de stems à sessão de VS</h2>
