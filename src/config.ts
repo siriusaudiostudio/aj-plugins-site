@@ -31,7 +31,7 @@ export const organizerScreenshots = [
   ['destinos', 'Destinos das faixas', 'Confira os destinos reconhecidos, ouça os áudios e ajuste o que for preciso antes de importar.', 'Tabela de stems com destinos sugeridos e botões para ouvir o áudio ou alterar a pista.'],
   ['arquivos', 'Arquivos e fila', 'Selecione uma pasta ou um arquivo ZIP ou RAR e organize os VS na fila.', 'Painéis de seleção de arquivos, destinos dos áudios e fila de VS.'],
   ['analise-bpm', 'Análise de BPM', 'Acompanhe a análise de BPM e batidas da mixagem do VS.', 'Barra de progresso da análise de BPM na seção de ajuste de áudio.'],
-  ['ajuste-andamento', 'Ajuste de andamento', 'Revise o compasso e escolha entre ajustar a grade do REAPER ou adaptar a duração dos stems.', 'Opções de ajuste de andamento com campos de BPM e compasso.'],
+  ['previa-audio', 'Prévia dos stems', 'Ouça cada stem e navegue pela forma de onda antes de importar.', 'Tabela de stems com a forma de onda e os controles de reprodução de um áudio.'],
 ].map(([name, title, description, alt], index) => ({
   order: index + 1,
   src: `/capturas/organizador/${name}.webp`,

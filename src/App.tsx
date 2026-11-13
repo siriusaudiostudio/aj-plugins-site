@@ -173,7 +173,7 @@ function Product({ product, state }: { product: CatalogProduct; state: ReleaseSt
         <p>Da seleção dos áudios à revisão das pistas, veja como preparar um VS antes de importar no REAPER.</p>
         {organizerCheckout && <a className="button secondary" href="#licenca">Ver licença e compra <ArrowRight size={16}/></a>}
       </div>
-      <ScreenshotGallery screenshots={organizerScreenshots} productName={product.name} captureVersion="0.2.79"/>
+      <ScreenshotGallery screenshots={organizerScreenshots} productName={product.name} captureVersion="0.2.80"/>
     </section>}
     {product.slug === 'organizador-pro' && <section className="workflow" aria-labelledby="organizer-workflow">
       <h2 id="organizer-workflow">Da pasta de stems à sessão de VS</h2>
