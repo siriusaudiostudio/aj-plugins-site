@@ -185,7 +185,6 @@ function Product({ product, state }: { product: CatalogProduct; state: ReleaseSt
         <p>Licença vitalícia para até dois computadores. Pagamento único por Pix ou cartão.</p>
       </div>
       <a className="button primary" href="#licenca">Comprar por {organizerPrice} <ArrowRight size={16}/></a>
-      <p className="organizer-refund-note"><a className="text-link" href="#reembolso">Reembolso por arrependimento em até 7 dias corridos</a></p>
     </section>}
     {isBrowser && <section className="interface-section" aria-labelledby="interface-title">
       <div><span className="eyebrow">VISÃO DO PRODUTO</span><h2 id="interface-title">Explore o AJ Plugin Browser</h2>
@@ -233,11 +232,7 @@ function Product({ product, state }: { product: CatalogProduct; state: ReleaseSt
       </section> : <section className="card" id="licenca"><h2>Licença vitalícia</h2>
         <ul className="features">{commerce.model.map(item => <li key={item}><Check size={16}/>{item}</li>)}</ul>
         {organizerCheckout ? <OrganizerCheckout/> : <p>Informações sobre compra, entrega e ativação serão divulgadas com a disponibilidade do produto.</p>}
-        {organizerCheckout && <section className="organizer-refund" id="reembolso" aria-labelledby="organizer-refund-title">
-          <h3 id="organizer-refund-title">Como solicitar o reembolso</h3>
-          <p>Você pode desistir da compra online e solicitar o reembolso integral em até <strong>7 dias corridos</strong>, contados da contratação ou do recebimento do produto, conforme o <a className="text-link" href="https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm#art49">art. 49 do Código de Defesa do Consumidor</a>.</p>
-          <p>No Mercado Pago, abra a compra em <strong>Atividade</strong>, selecione <strong>Preciso de ajuda</strong> e procure a opção de reembolso. Você também pode <a className="text-link" href="mailto:siriusaudiostudio@gmail.com?subject=Reembolso%20do%20AJ%20Organizer%20Pro">solicitar por e-mail</a>. Informe o e-mail usado na compra e o número do pagamento, se tiver.</p>
-        </section>}
+
         {documentation && <a className="text-link" href={documentation}>Documentação <ArrowUpRight size={16}/></a>}
       </section>}
     </div>
@@ -279,7 +274,15 @@ export function App({ path }: { path: string }) {
           <div className="card about"><AudioLines size={30}/><h2>Menos tarefas repetitivas no REAPER</h2><p>O AJ Plugin Browser é dedicado à busca e à organização de plugins. O AJ Organizer Pro está em desenvolvimento para ajudar na preparação de sessões, com foco na organização de faixas e arquivos de áudio.</p><a className="text-link" href="/produtos/">Explorar produtos <ArrowRight size={17}/></a></div>
         </section> : <section className="wrap interior"><Intro label="ERRO 404" title="Página não encontrada" description="O endereço solicitado pode ter mudado ou estar incorreto."/><a className="button primary" href="/"><ArrowLeft size={16}/> Voltar ao início</a></section>}
     </main>
-    <footer className="footer"><div className="wrap footer-inner"><div><Brand/><p>{site.slogan}</p></div><nav aria-label="Navegação do rodapé">{nav.slice(1).map(([label, href]) => <a href={href} key={href}>{label}</a>)}</nav><small>© AJ Plugins</small></div></footer>
+    <footer className="footer"><div className="wrap footer-inner"><div><Brand/><p>{site.slogan}</p></div><nav aria-label="Navegação do rodapé">{nav.slice(1).map(([label, href]) => <a href={href} key={href}>{label}</a>)}</nav><small>© AJ Plugins</small>
+      {organizerCheckout && product?.slug === 'organizador-pro' && <details className="organizer-refund">
+        <summary>Política de reembolso</summary>
+        <div id="reembolso">
+          <p>Você pode desistir da compra online e solicitar o reembolso integral em até <strong>7 dias corridos</strong>, contados da contratação ou do recebimento do produto, conforme o <a className="text-link" href="https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm#art49">art. 49 do Código de Defesa do Consumidor</a>.</p>
+          <p>No Mercado Pago, abra a compra em <strong>Atividade</strong>, selecione <strong>Preciso de ajuda</strong> e procure a opção de reembolso. Você também pode <a className="text-link" href="mailto:siriusaudiostudio@gmail.com?subject=Reembolso%20do%20AJ%20Organizer%20Pro">solicitar por e-mail</a>. Informe o e-mail usado na compra e o número do pagamento, se tiver.</p>
+        </div>
+      </details>}
+    </div></footer>
   </>;
 }
 
