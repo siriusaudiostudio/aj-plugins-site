@@ -26,7 +26,7 @@ async function createOrder(request, url, env) {
     headers: { Authorization: 'Bearer ' + env.MP_ACCESS_TOKEN, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       external_reference: id,
-      items: [{ id: product, title: 'AJ Organizer Pro — licença vitalícia', quantity: 1, currency_id: 'BRL', unit_price: 19.90 }],
+      items: [{ id: product, title: 'AJ VS Organizer Pro — licença vitalícia', quantity: 1, currency_id: 'BRL', unit_price: 19.90 }],
       payer: { name, email },
       back_urls: { success: returnUrl, pending: returnUrl, failure: returnUrl },
       notification_url: url.origin + '/api/organizer?webhook',

@@ -18,7 +18,7 @@ const productPath = (product: CatalogProduct) => '/produtos/' + product.slug + '
 const nav = [['Início', '/'], ['Produtos', '/produtos/'], ['Sobre', '/sobre/'], ['Suporte', '/suporte/']];
 export const pages = [
   { path: '/', title: site.slogan, description: site.description },
-  { path: '/produtos/', title: 'Produtos', description: 'Explore o AJ Plugin Browser e o AJ Organizer Pro para REAPER.' },
+  { path: '/produtos/', title: 'Produtos', description: 'Explore o AJ Plugin Browser e o AJ VS Organizer Pro para REAPER.' },
   ...products.map(product => ({ path: productPath(product), title: product.name, description: product.description })),
   { path: '/sobre/', title: 'Sobre', description: 'Conheça a AJ Plugins e suas ferramentas para REAPER.' },
   { path: '/suporte/', title: 'Suporte', description: 'Instalação, atualizações, requisitos e ajuda para ferramentas AJ Plugins.' },
@@ -182,7 +182,7 @@ function Product({ product, state }: { product: CatalogProduct; state: ReleaseSt
     </section>
     {!isBrowser && organizerCheckout && <section className="organizer-offer" aria-labelledby="organizer-offer-title">
       <div>
-        <h2 id="organizer-offer-title">Adquira já o seu AJ Organizer Pro</h2>
+        <h2 id="organizer-offer-title">Adquira já o seu AJ VS Organizer Pro</h2>
         <p>Licença vitalícia para até dois computadores. Pagamento único por Pix ou cartão.</p>
       </div>
       <a className="button primary" href="#licenca">Comprar por {organizerPrice} <ArrowRight size={16}/></a>
@@ -199,7 +199,7 @@ function Product({ product, state }: { product: CatalogProduct; state: ReleaseSt
     </section>}
     {product.slug === 'organizador-pro' && <section className="interface-section organizer-interface" id="capturas" aria-labelledby="organizer-screenshots">
       <div>
-        <h2 id="organizer-screenshots">Veja o Organizer Pro em ação</h2>
+        <h2 id="organizer-screenshots">Veja o AJ VS Organizer Pro em ação</h2>
         <p>Da seleção dos áudios à revisão das pistas, veja como preparar um VS antes de importar no REAPER.</p>
         {organizerCheckout && <a className="button secondary" href="#licenca">Comprar por {organizerPrice} <ArrowRight size={16}/></a>}
       </div>
@@ -219,7 +219,7 @@ function Product({ product, state }: { product: CatalogProduct; state: ReleaseSt
       </li>)}</ul>
     </section>}
     {product.slug === 'organizador-pro' && <section className="workflow" id="recursos" aria-labelledby="organizer-features">
-      <h2 id="organizer-features">Recursos do AJ Organizer Pro</h2>
+      <h2 id="organizer-features">Recursos do AJ VS Organizer Pro</h2>
       <div className="info-grid">{product.features.map(group => <section className="card" key={group.title}>
         <h3>{group.title}</h3>
         <ul className="features">{group.items.map(item => <li key={item}><Check size={16} aria-hidden="true"/>{item}</li>)}</ul>
@@ -241,7 +241,7 @@ function Product({ product, state }: { product: CatalogProduct; state: ReleaseSt
       <h2 id="organizer-guide-title">Como instalar, ativar e recuperar seu acesso</h2>
       <ol className="steps">
         <li><strong>1. Instale no Windows</strong><p>Após a aprovação do pagamento, abra o link privado do pedido recebido por e-mail e clique em <strong>Baixar instalador</strong>. Feche o REAPER, execute o instalador e siga as instruções na tela.</p></li>
-        <li><strong>2. Ative no REAPER</strong><p>Abra o REAPER e execute o AJ Organizer Pro. Na tela de ativação, cole o código recebido por e-mail e clique em <strong>Ativar com código</strong>. A licença vitalícia pode ser ativada em até dois computadores.</p></li>
+        <li><strong>2. Ative no REAPER</strong><p>Abra o REAPER e execute o script, que na versão 0.2.80 aparece como <strong>AJ Organizer Pro</strong>. Na tela de ativação, cole o código recebido por e-mail e clique em <strong>Ativar com código</strong>. A licença vitalícia pode ser ativada em até dois computadores.</p></li>
         <li><strong>3. Recupere seu acesso</strong><p>Abra <strong>Já comprei</strong> na <a className="text-link" href="#licenca">seção de licença</a>. Se tiver o código, use <strong>Acessar com código</strong> para baixar novamente. Se precisar do código ou do link, informe o e-mail usado na compra e clique em <strong>Reenviar acesso por e-mail</strong>.</p></li>
       </ol>
     </section>}
@@ -280,7 +280,7 @@ export function App({ path }: { path: string }) {
       {path === '/' ? <Home state={state}/> : path === '/produtos/' ? <Catalog state={state}/> :
         product ? <Product product={product} state={state}/> : path === '/moderacao/' ? <Moderation/> : path === '/suporte/' ? <Support/> :
         path === '/sobre/' ? <section className="wrap interior"><Intro label="AJ PLUGINS" title="Sobre a AJ Plugins" description="Desenvolvemos scripts e ferramentas para quem produz, edita, mixa e masteriza áudio no REAPER."/>
-          <div className="card about"><AudioLines size={30}/><h2>Menos tarefas repetitivas no REAPER</h2><p>O AJ Plugin Browser é dedicado à busca e à organização de plugins. O AJ Organizer Pro está em desenvolvimento para ajudar na preparação de sessões, com foco na organização de faixas e arquivos de áudio.</p><a className="text-link" href="/produtos/">Explorar produtos <ArrowRight size={17}/></a></div>
+          <div className="card about"><AudioLines size={30}/><h2>Menos tarefas repetitivas no REAPER</h2><p>O AJ Plugin Browser é dedicado à busca e à organização de plugins. O AJ VS Organizer Pro ajuda a organizar faixas e arquivos de áudio na preparação de sessões de VS.</p><a className="text-link" href="/produtos/">Explorar produtos <ArrowRight size={17}/></a></div>
         </section> : <section className="wrap interior"><Intro label="ERRO 404" title="Página não encontrada" description="O endereço solicitado pode ter mudado ou estar incorreto."/><a className="button primary" href="/"><ArrowLeft size={16}/> Voltar ao início</a></section>}
     </main>
     <footer className="footer"><div className="wrap footer-inner"><div><Brand/><p>{site.slogan}</p></div><nav aria-label="Navegação do rodapé">{nav.slice(1).map(([label, href]) => <a href={href} key={href}>{label}</a>)}</nav><small>© AJ Plugins</small>
@@ -288,7 +288,7 @@ export function App({ path }: { path: string }) {
         <summary>Política de reembolso</summary>
         <div id="reembolso">
           <p>Você pode desistir da compra online e solicitar o reembolso integral em até <strong>7 dias corridos</strong>, contados da contratação ou do recebimento do produto, conforme o <a className="text-link" href="https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm#art49">art. 49 do Código de Defesa do Consumidor</a>.</p>
-          <p>No Mercado Pago, abra a compra em <strong>Atividade</strong>, selecione <strong>Preciso de ajuda</strong> e procure a opção de reembolso. Você também pode <a className="text-link" href="mailto:siriusaudiostudio@gmail.com?subject=Reembolso%20do%20AJ%20Organizer%20Pro">solicitar por e-mail</a>. Informe o e-mail usado na compra e o número do pagamento, se tiver.</p>
+          <p>No Mercado Pago, abra a compra em <strong>Atividade</strong>, selecione <strong>Preciso de ajuda</strong> e procure a opção de reembolso. Você também pode <a className="text-link" href="mailto:siriusaudiostudio@gmail.com?subject=Reembolso%20do%20AJ%20VS%20Organizer%20Pro">solicitar por e-mail</a>. Informe o e-mail usado na compra e o número do pagamento, se tiver.</p>
         </div>
       </details>}
     </div></footer>

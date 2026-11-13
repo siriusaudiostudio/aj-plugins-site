@@ -16,12 +16,12 @@ export function deliveryMessage(order, token, origin) {
   const link = page + '#pedido=' + token;
   const activation = 'Após instalar, abra o Organizer no REAPER e use Ativar com código. A licença é vitalícia e vale para até dois computadores. O arquivo de licença é gerado para cada computador durante a ativação.';
   const fallback = 'Se o botão não abrir seu pedido, acesse a página do produto e use Já comprei → Acessar com código.';
-  const text = `Olá, ${order.buyer_name}!\n\nSeu pagamento do AJ Organizer Pro foi aprovado.\n\nBaixar AJ Organizer Pro ou baixar novamente:\n${link}\n\nNa página privada, selecione Baixar instalador.\n\nCódigo de ativação:\n${token}\n\n${activation}\n\n${fallback}\n${page}\n\nGuarde este e-mail. O código e o link são privados.\nPedido: ${order.id}\n\nAJ Plugins`;
-  return { subject: 'AJ Organizer Pro — sua licença e download', textContent: text,
+  const text = `Olá, ${order.buyer_name}!\n\nSeu pagamento do AJ VS Organizer Pro foi aprovado.\n\nBaixar AJ VS Organizer Pro ou baixar novamente:\n${link}\n\nNa página privada, selecione Baixar instalador.\n\nCódigo de ativação:\n${token}\n\n${activation}\n\n${fallback}\n${page}\n\nGuarde este e-mail. O código e o link são privados.\nPedido: ${order.id}\n\nAJ Plugins`;
+  return { subject: 'AJ VS Organizer Pro — sua licença e download', textContent: text,
     htmlContent: `<!doctype html><html lang="pt-BR"><body><div style="font-family:Arial,sans-serif;max-width:640px;margin:auto;line-height:1.6;padding:24px">
-      <h1>Seu AJ Organizer Pro está liberado</h1>
+      <h1>Seu AJ VS Organizer Pro está liberado</h1>
       <p>Olá, ${escape(order.buyer_name)}! Seu pagamento foi aprovado.</p>
-      <p><a href="${escape(link)}" style="display:inline-block;background:#e9ba56;color:#17130d;padding:12px 20px;border-radius:8px;font-weight:bold">Baixar AJ Organizer Pro</a></p>
+      <p><a href="${escape(link)}" style="display:inline-block;background:#e9ba56;color:#17130d;padding:12px 20px;border-radius:8px;font-weight:bold">Baixar AJ VS Organizer Pro</a></p>
       <p>O botão abre seu pedido privado. Selecione <strong>Baixar instalador</strong>. Guarde este e-mail para baixar novamente.</p>
       <h2>Código de ativação</h2><p style="overflow-wrap:anywhere;word-break:break-all"><code>${escape(token)}</code></p>
       <p>${escape(activation)}</p><p>${escape(fallback)} <a href="${escape(page)}">Abrir página do produto</a>.</p>

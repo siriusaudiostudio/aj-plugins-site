@@ -26,10 +26,10 @@ export function OrganizerCheckout() {
   }
 
   function saveAccess() {
-    const text = `AJ Organizer Pro — acesso privado\nPedido: ${orderId}\nCódigo de ativação: ${token}\nLink: ${window.location.origin + window.location.pathname}#pedido=${token}\nLicença vitalícia para até dois computadores. Não compartilhe este arquivo.\n`;
+    const text = `AJ VS Organizer Pro — acesso privado\nPedido: ${orderId}\nCódigo de ativação: ${token}\nLink: ${window.location.origin + window.location.pathname}#pedido=${token}\nLicença vitalícia para até dois computadores. Não compartilhe este arquivo.\n`;
     const url = URL.createObjectURL(new Blob([text], { type: 'text/plain;charset=utf-8' }));
     const link = document.createElement('a');
-    link.href = url; link.download = 'AJ-Organizer-Pro-meu-acesso.txt'; link.click();
+    link.href = url; link.download = 'AJ-VS-Organizer-Pro-meu-acesso.txt'; link.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 

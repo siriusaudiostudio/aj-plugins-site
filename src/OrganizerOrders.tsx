@@ -46,7 +46,7 @@ export function OrganizerOrders({ token }: { token: string }) {
   }
 
   return <section className="card organizer-metrics organizer-orders" aria-labelledby="organizer-orders-title">
-    <h2 id="organizer-orders-title">Buscar pedidos do AJ Organizer Pro</h2>
+    <h2 id="organizer-orders-title">Buscar pedidos do AJ VS Organizer Pro</h2>
     <form className="feedback-form" onSubmit={event => {
       event.preventDefault();
       void run('search', String(new FormData(event.currentTarget).get('query') ?? ''));

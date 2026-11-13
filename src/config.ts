@@ -124,12 +124,12 @@ export const products = [
     screenshots,
   },
   {
-    slug: 'organizador-pro', name: 'AJ Organizer Pro', status: 'Em breve', icon: FolderTree,
+    slug: 'organizador-pro', name: 'AJ VS Organizer Pro', status: 'Em breve', icon: FolderTree,
     description: 'Da pasta de stems ao repertório organizado no REAPER. A IA analisa o áudio para reconhecer instrumentos e sugerir em qual pista cada stem entra. Se o BPM não estiver informado, ela estima o andamento. Você revisa os destinos e importa várias músicas de uma vez, na ordem do show.',
     version: '0.2.80',
     requirements: 'Windows 64 bits. Requer REAPER e ativação no computador.',
     category: 'Ferramenta para REAPER',
-    action: 'Conhecer o AJ Organizer Pro',
+    action: 'Conhecer o AJ VS Organizer Pro',
     highlights: [
       { title: 'IA de BPM e batidas', description: 'Quando o BPM não estiver informado no nome da pasta ou do clique, a IA analisa a mixagem do VS ou um áudio escolhido para estimar o BPM, identificar as batidas e sugerir o compasso. Ajuste a grade ao andamento original ou alinhe os stems juntos a um BPM fixo.' },
       { title: 'IA de reconhecimento de instrumentos e sugestão de destinos', description: 'A IA analisa o áudio de cada stem para reconhecer a família do instrumento. O Organizer usa esse resultado e as regras da sessão para sugerir a pista de destino no REAPER e pode preenchê-la automaticamente quando houver uma opção compatível e inequívoca.' },

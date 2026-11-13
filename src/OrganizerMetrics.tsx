@@ -38,7 +38,7 @@ export function OrganizerMetrics({ token }: { token: string }) {
   }, [period, token]);
 
   return <section className="card organizer-metrics" aria-labelledby="organizer-metrics-title">
-    <h2 id="organizer-metrics-title">Vendas e downloads do AJ Organizer Pro</h2>
+    <h2 id="organizer-metrics-title">Vendas e downloads do AJ VS Organizer Pro</h2>
     <form className="actions" onSubmit={event => {
       event.preventDefault();
       const form = new FormData(event.currentTarget);

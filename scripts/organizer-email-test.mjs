@@ -156,7 +156,7 @@ test('email template never embeds executable or machine-specific fake license', 
   const privateLink = 'https://example.com/produtos/organizador-pro/#pedido=' + originalToken;
   assert.ok(message.textContent.includes(privateLink));
   assert.ok(message.htmlContent.includes('href="' + privateLink + '"'));
-  assert.ok(message.htmlContent.includes('Baixar AJ Organizer Pro'));
+  assert.ok(message.htmlContent.includes('Baixar AJ VS Organizer Pro'));
   assert.ok(message.htmlContent.includes('Acessar com código'));
 });
 
