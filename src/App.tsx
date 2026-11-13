@@ -185,6 +185,7 @@ function Product({ product, state }: { product: CatalogProduct; state: ReleaseSt
         <p>Licença vitalícia para até dois computadores. Pagamento único por Pix ou cartão.</p>
       </div>
       <a className="button primary" href="#licenca">Comprar por {organizerPrice} <ArrowRight size={16}/></a>
+      <p className="organizer-refund-note"><a className="text-link" href="#reembolso">Reembolso por arrependimento em até 7 dias corridos</a></p>
     </section>}
     {isBrowser && <section className="interface-section" aria-labelledby="interface-title">
       <div><span className="eyebrow">VISÃO DO PRODUTO</span><h2 id="interface-title">Explore o AJ Plugin Browser</h2>
@@ -232,6 +233,11 @@ function Product({ product, state }: { product: CatalogProduct; state: ReleaseSt
       </section> : <section className="card" id="licenca"><h2>Licença vitalícia</h2>
         <ul className="features">{commerce.model.map(item => <li key={item}><Check size={16}/>{item}</li>)}</ul>
         {organizerCheckout ? <OrganizerCheckout/> : <p>Informações sobre compra, entrega e ativação serão divulgadas com a disponibilidade do produto.</p>}
+        {organizerCheckout && <section className="organizer-refund" id="reembolso" aria-labelledby="organizer-refund-title">
+          <h3 id="organizer-refund-title">Como solicitar o reembolso</h3>
+          <p>Você pode desistir da compra online e solicitar o reembolso integral em até <strong>7 dias corridos</strong>, contados da contratação ou do recebimento do produto, conforme o <a className="text-link" href="https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm#art49">art. 49 do Código de Defesa do Consumidor</a>.</p>
+          <p>No Mercado Pago, abra a compra em <strong>Atividade</strong>, selecione <strong>Preciso de ajuda</strong> e procure a opção de reembolso. Você também pode <a className="text-link" href="mailto:siriusaudiostudio@gmail.com?subject=Reembolso%20do%20AJ%20Organizer%20Pro">solicitar por e-mail</a>. Informe o e-mail usado na compra e o número do pagamento, se tiver.</p>
+        </section>}
         {documentation && <a className="text-link" href={documentation}>Documentação <ArrowUpRight size={16}/></a>}
       </section>}
     </div>
