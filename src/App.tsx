@@ -1,12 +1,17 @@
 import { OrganizerCheckout } from './OrganizerCheckout';
 import { useEffect, useState } from 'react';
-import { ArrowDownToLine, ArrowLeft, ArrowRight, ArrowUpRight, AudioLines, Check, ChevronDown, CircleHelp, Menu, X } from 'lucide-react';
+import { ArrowDownToLine, ArrowLeft, ArrowRight, ArrowUpRight, AudioLines, Check, ChevronDown, CircleHelp, Menu, Play, X } from 'lucide-react';
 import { commerce, faq, organizerPrice, organizerScreenshots, products, release, site } from './config';
 import { Feedback, Moderation } from './Feedback';
 import { ScreenshotGallery } from './ScreenshotGallery';
 
 const browser = products[0];
 const organizerCaptureVersion = '0.2.80';
+const organizerVideos = [
+  { number: '01', title: 'Demonstração 1', duration: '0:25' },
+  { number: '02', title: 'Demonstração 2', duration: '0:34' },
+  { number: '03', title: 'Demonstração 3', duration: '0:24' },
+];
 const organizerCheckout = import.meta.env.VITE_ORGANIZER_CHECKOUT === 'true';
 type CatalogProduct = (typeof products)[number];
 const productPath = (product: CatalogProduct) => '/produtos/' + product.slug + '/';
@@ -98,6 +103,21 @@ function Intro({ label, title, description }: { label: string; title: string; de
   return <div className="intro"><span className="eyebrow">{label}</span><h1>{title}</h1><p>{description}</p></div>;
 }
 
+function OrganizerVideo({ number, title, duration }: (typeof organizerVideos)[number]) {
+  const [open, setOpen] = useState(false);
+  const path = '/videos/organizador/demo-' + number;
+  return <details className="organizer-video" onToggle={event => setOpen(event.currentTarget.open)}>
+    <summary>
+      <span className="organizer-video-cover">
+        <img src={path + '.webp'} alt="" loading="lazy" decoding="async"/>
+        <span className="organizer-video-play"><Play size={20} aria-hidden="true"/> Assistir</span>
+      </span>
+      <span className="organizer-video-label"><strong>{title}</strong><span>{duration}</span></span>
+    </summary>
+    {open && <video controls playsInline preload="metadata" aria-label={title} poster={path + '.webp'} src={path + '.mp4'}/>}
+  </details>;
+}
+
 function Catalog({ state, home = false }: { state: ReleaseState; home?: boolean }) {
   return <section className={home ? 'catalog section-line' : 'catalog'} id="ferramentas">
     <div className="wrap">
@@ -145,7 +165,7 @@ function Product({ product, state }: { product: CatalogProduct; state: ReleaseSt
   return <div className="wrap interior">
     <nav className="actions" aria-label="Navegação do produto">
       <a className="text-link" href="/produtos/"><ArrowLeft size={16}/> Todos os produtos</a>
-      {product.slug === 'organizador-pro' && <><a className="text-link" href="#capturas">Capturas de tela</a><a className="text-link" href="#recursos">Recursos</a></>}
+      {product.slug === 'organizador-pro' && <><a className="text-link" href="#capturas">Capturas de tela</a><a className="text-link" href="#videos">Vídeos</a><a className="text-link" href="#recursos">Recursos</a></>}
       {organizerCheckout && !isBrowser && <a className="text-link" href="#licenca">Licença e compra</a>}
       <a className="text-link" href="#comentarios">Comentários e sugestões</a>
     </nav>
@@ -183,6 +203,12 @@ function Product({ product, state }: { product: CatalogProduct; state: ReleaseSt
         {organizerCheckout && <a className="button secondary" href="#licenca">Comprar por {organizerPrice} <ArrowRight size={16}/></a>}
       </div>
       <ScreenshotGallery screenshots={organizerScreenshots} productName={product.name} captureVersion={organizerCaptureVersion}/>
+    </section>}
+    {product.slug === 'organizador-pro' && <section className="workflow" id="videos" aria-labelledby="organizer-videos">
+      <h2 id="organizer-videos">Veja o fluxo de trabalho em vídeo</h2>
+      <div className="organizer-videos">
+        {organizerVideos.map(video => <OrganizerVideo key={video.number} {...video}/>)}
+      </div>
     </section>}
     {product.slug === 'organizador-pro' && <section className="workflow" aria-labelledby="organizer-workflow">
       <h2 id="organizer-workflow">Da pasta de stems à sessão de VS</h2>
