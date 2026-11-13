@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
 import { products } from './config';
 import { DownloadStats } from './DownloadStats';
+import { OrganizerMetrics } from './OrganizerMetrics';
 
 type Status = 'pending' | 'approved' | 'rejected';
 type Comment = { id: string; name: string; message: string; created_at: number };
@@ -127,6 +128,7 @@ export function Moderation() {
       <button className="button primary" disabled={busy}>{busy ? 'Verificando…' : 'Entrar'}</button>
     </form> : <>
       <DownloadStats/>
+      <OrganizerMetrics token={token}/>
       <div className="actions">
         {(Object.keys(labels) as Status[]).map(filter => <button key={filter} className="button secondary" type="button" aria-pressed={status === filter} disabled={busy} onClick={() => void load(token, filter)}>{labels[filter]}</button>)}
         <button className="button secondary" type="button" disabled={busy} onClick={() => { setToken(''); setItems([]); setNext(null); setNotice(''); }}>Sair</button>

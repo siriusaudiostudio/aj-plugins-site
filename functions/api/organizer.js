@@ -130,6 +130,13 @@ export async function onRequest({ request, env, waitUntil }) {
   if (request.method === 'GET') {
     const file = await env.ORGANIZER_INSTALLERS.get(installer);
     if (!file) return json(503, { error: 'Instalador indisponível.' });
+    const track = Promise.resolve().then(() => env.ORGANIZER_DB.prepare(
+      "INSERT INTO organizer_metric_events VALUES ('download', ?, ?)",
+    ).bind(crypto.randomUUID(), new Date().toISOString()).run()).catch(() => {
+      console.error('Não foi possível registrar a entrega do instalador.');
+    });
+    if (waitUntil) waitUntil(track);
+    else await track;
     return new Response(file.body, { headers: { ...headers, 'Content-Type': 'application/octet-stream',
       'Content-Disposition': `attachment; filename="${installer}"` } });
   }

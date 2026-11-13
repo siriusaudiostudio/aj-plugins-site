@@ -194,3 +194,9 @@ details[open] summary svg{transform:rotate(180deg)}
 .organizer-refund summary { cursor:pointer; width:fit-content; text-decoration:underline; text-underline-offset:3px; }
 .organizer-refund p { max-width:76ch; margin-top:8px; }
 .organizer-refund .text-link { display:inline; font-size:inherit; text-decoration:underline; }
+.organizer-metrics { margin-block:20px; }
+.organizer-metrics form { align-items:end; }
+.organizer-metrics form label { display:grid; gap:6px; }
+.organizer-metrics-counts { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,170px),1fr)); gap:12px; }
+.organizer-metrics-counts div { padding:14px; border:1px solid var(--border); border-radius:10px; }
+.organizer-metrics-counts dd { margin:6px 0 0; font-size:1.65rem; color:var(--gold); font-weight:750; }

@@ -1,3 +1,5 @@
+import { isAdmin } from '../../server/admin-auth.js';
+
 const json = (body, status = 200) => Response.json(body, {
   status,
   headers: { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' },
@@ -26,14 +28,6 @@ async function readBody(request) {
   }
   try { return JSON.parse(data + decoder.decode()); }
   catch { return null; }
-}
-
-async function isAdmin(request, token) {
-  const supplied = request.headers.get('Authorization') ?? '';
-  if (!supplied.startsWith('Bearer ') || supplied.length > 256) return false;
-  const key = await crypto.subtle.importKey('raw', encoder.encode(token), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign', 'verify']);
-  const proof = await crypto.subtle.sign('HMAC', key, encoder.encode(token));
-  return crypto.subtle.verify('HMAC', key, proof, encoder.encode(supplied.slice(7)));
 }
 
 export async function onRequest({ request, env }) {
@@ -100,4 +94,3 @@ export async function onRequest({ request, env }) {
   ).bind(crypto.randomUUID(), kind, name, message, submitter, now, product, submitter, day * 86400000).run();
   return meta.changes ? json({ ok: true }, 201) : json({ error: 'Limite de envios atingido. Tente novamente amanhã.' }, 429);
 }
-
