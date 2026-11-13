@@ -1,7 +1,7 @@
 import { OrganizerCheckout } from './OrganizerCheckout';
 import { useEffect, useState } from 'react';
 import { ArrowDownToLine, ArrowLeft, ArrowRight, ArrowUpRight, AudioLines, Check, ChevronDown, CircleHelp, Menu, X } from 'lucide-react';
-import { commerce, faq, products, release, site } from './config';
+import { commerce, faq, organizerScreenshots, products, release, site } from './config';
 import { Feedback, Moderation } from './Feedback';
 import { ScreenshotGallery } from './ScreenshotGallery';
 
@@ -143,7 +143,7 @@ function Product({ product, state }: { product: CatalogProduct; state: ReleaseSt
   return <div className="wrap interior">
     <nav className="actions" aria-label="Navegação do produto">
       <a className="text-link" href="/produtos/"><ArrowLeft size={16}/> Todos os produtos</a>
-      {product.slug === 'organizador-pro' && <a className="text-link" href="#recursos">Recursos</a>}
+      {product.slug === 'organizador-pro' && <><a className="text-link" href="#capturas">Capturas de tela</a><a className="text-link" href="#recursos">Recursos</a></>}
       {organizerCheckout && !isBrowser && <a className="text-link" href="#licenca">Licença e compra</a>}
       <a className="text-link" href="#comentarios">Comentários e sugestões</a>
     </nav>
@@ -166,6 +166,14 @@ function Product({ product, state }: { product: CatalogProduct; state: ReleaseSt
     </section>}
     {isBrowser && <section className="workflow" aria-labelledby="workflow-title"><h2 id="workflow-title">Como funciona</h2>
       <ol className="steps">{browser.steps.map((step, index) => <li key={step}><span aria-hidden="true">0{index + 1}</span>{step}</li>)}</ol>
+    </section>}
+    {product.slug === 'organizador-pro' && <section className="interface-section organizer-interface" id="capturas" aria-labelledby="organizer-screenshots">
+      <div>
+        <h2 id="organizer-screenshots">Veja o Organizer Pro em ação</h2>
+        <p>Da seleção dos áudios à revisão das pistas, veja como preparar um VS antes de importar no REAPER.</p>
+        {organizerCheckout && <a className="button secondary" href="#licenca">Ver licença e compra <ArrowRight size={16}/></a>}
+      </div>
+      <ScreenshotGallery screenshots={organizerScreenshots} productName={product.name} captureVersion="0.2.79"/>
     </section>}
     {product.slug === 'organizador-pro' && <section className="workflow" aria-labelledby="organizer-workflow">
       <h2 id="organizer-workflow">Da pasta de stems à sessão de VS</h2>

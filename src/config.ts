@@ -27,6 +27,21 @@ export const commerce = {
   model: ['Licença vitalícia', 'Pagamento único', 'Sem assinatura recorrente'],
 };
 
+export const organizerScreenshots = [
+  ['destinos', 'Destinos das faixas', 'Confira os destinos reconhecidos, ouça os áudios e ajuste o que for preciso antes de importar.', 'Tabela de stems com destinos sugeridos e botões para ouvir o áudio ou alterar a pista.'],
+  ['arquivos', 'Arquivos e fila', 'Selecione uma pasta ou um arquivo ZIP ou RAR e organize os VS na fila.', 'Painéis de seleção de arquivos, destinos dos áudios e fila de VS.'],
+  ['analise-bpm', 'Análise de BPM', 'Acompanhe a análise de BPM e batidas da mixagem do VS.', 'Barra de progresso da análise de BPM na seção de ajuste de áudio.'],
+  ['ajuste-andamento', 'Ajuste de andamento', 'Revise o compasso e escolha entre ajustar a grade do REAPER ou adaptar a duração dos stems.', 'Opções de ajuste de andamento com campos de BPM e compasso.'],
+].map(([name, title, description, alt], index) => ({
+  order: index + 1,
+  src: `/capturas/organizador/${name}.webp`,
+  display: `/capturas/organizador/${name}.webp`,
+  thumbnail: `/capturas/organizador/${name}-mini.webp`,
+  width: 1075,
+  height: 1026,
+  title, description, alt,
+}));
+
 const screenshots = [
   {
     order: 1,

@@ -145,9 +145,12 @@ details[open] summary svg{transform:rotate(180deg)}
 .gallery-thumbnail img{width:100%;height:auto;border-radius:4px}
 .gallery-thumbnail span{padding:5px 2px;font-size:.72rem;overflow-wrap:anywhere}
 .gallery-compact .gallery-thumbnails{grid-template-columns:repeat(5,minmax(0,80px))}
+.organizer-interface .button{margin-top:16px}
+.organizer-interface .gallery-thumbnails{grid-template-columns:repeat(4,minmax(0,1fr))}
 .dialog-toolbar small{display:block;color:var(--muted);margin-top:3px}
 @media(max-width:520px){
   .gallery-full .gallery-thumbnails{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .organizer-interface .gallery-thumbnails{grid-template-columns:repeat(2,minmax(0,1fr))}
   .gallery-thumbnails{gap:6px}
   .dialog-toolbar{gap:6px;padding-inline:8px}
   .dialog-toolbar .gallery-arrows{gap:3px}
