@@ -2,6 +2,7 @@ import { OrganizerCheckout } from './OrganizerCheckout';
 import { useEffect, useState } from 'react';
 import { ArrowLeft, ArrowRight, ArrowUpRight, AudioLines, Check, ChevronDown, CircleHelp, Menu, Play, X } from 'lucide-react';
 import { WindowsIcon } from './WindowsIcon';
+import { OrganizerPrice } from './OrganizerPrice';
 import { commerce, faq, organizerPrice, organizerScreenshots, products, release, site } from './config';
 import { Feedback, Moderation } from './Feedback';
 import { ScreenshotGallery } from './ScreenshotGallery';
@@ -130,8 +131,9 @@ function Catalog({ state, home = false }: { state: ReleaseState; home?: boolean 
         <p className="muted">Instalador para Windows 64 bits</p>
         {product === browser ? <><p className="card-highlight">{browser.highlight}</p><ScreenshotGallery variant="cover"/></> :
           <><ul className="features">{commerce.model.map(item => <li key={item}><Check size={15}/>{item}</li>)}</ul><ScreenshotGallery variant="cover" screenshots={organizerScreenshots} productName={product.name} captureVersion={organizerCaptureVersion}/></>}
+        {product.slug === 'organizador-pro' && organizerCheckout && <OrganizerPrice/>}
         <div className="card-actions">{product === browser && <Download state={state}/>}
-        {product.slug === 'organizador-pro' && organizerCheckout && <a className="button primary" href={productPath(product) + '#licenca'}>Comprar por {organizerPrice} <ArrowRight size={16}/></a>}
+        {product.slug === 'organizador-pro' && organizerCheckout && <a className="button primary organizer-buy" href={productPath(product) + '#licenca'}>Comprar por {organizerPrice} <ArrowRight size={16}/></a>}
         <a className={product === browser || organizerCheckout ? 'text-link' : 'button secondary'} href={productPath(product)}>{product.action} <ArrowRight size={16}/></a></div>
       </article>)}</div>
     </div>
@@ -187,7 +189,10 @@ function Product({ product, state }: { product: CatalogProduct; state: ReleaseSt
         <h2 id="organizer-offer-title">Adquira já o seu AJ VS Organizer Pro</h2>
         <p>Instalador para Windows 64 bits. Licença vitalícia para até dois computadores. Pagamento único por Pix ou cartão.</p>
       </div>
-      <a className="button primary" href="#licenca">Comprar por {organizerPrice} <ArrowRight size={16}/></a>
+      <div className="organizer-offer-action">
+        <OrganizerPrice/>
+        <a className="button primary organizer-buy" href="#licenca">Comprar por {organizerPrice} <ArrowRight size={16}/></a>
+      </div>
     </section>}
     {isBrowser && <section className="interface-section" aria-labelledby="interface-title">
       <div><span className="eyebrow">VISÃO DO PRODUTO</span><h2 id="interface-title">Explore o AJ Plugin Browser</h2>

@@ -169,7 +169,12 @@ details[open] summary svg{transform:rotate(180deg)}
 .feedback-list li p{white-space:pre-wrap;margin-top:5px}
 .moderation [aria-pressed="true"]{border-color:var(--gold);color:var(--gold)}
 .feedback-form button:disabled,.moderation button:disabled{opacity:.6;cursor:wait}
-.organizer-price { display: grid; gap: .25rem; margin: 1rem 0; }
+.organizer-price { display:grid; gap:8px; margin:1rem 0; padding:clamp(16px,3vw,24px); border:1px solid #82682e; border-radius:12px; background:#252014; color:var(--silver); }
+.organizer-price-label { justify-self:start; padding:5px 11px; border-radius:999px; background:#e9ba56; color:#17130d; font-size:.85rem; font-weight:750; }
+.organizer-offer-action { flex:0 1 320px; min-width:0; }
+.organizer-offer-action .organizer-price { margin:0 0 12px; }
+.organizer-buy { min-height:52px; padding:12px 20px; font-size:1rem; }
+.organizer-offer-action .organizer-buy { width:100%; }
 .organizer-offer { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px 24px; padding:clamp(18px,3vw,28px); margin-bottom:32px; border:1px solid #5b4b24; border-radius:13px; background:#1d1a13; }
 .organizer-offer h2 { font-size:clamp(1.15rem,2.6vw,1.65rem); }
 .organizer-offer p { margin-top:6px; }
@@ -186,7 +191,7 @@ details[open] summary svg{transform:rotate(180deg)}
 .organizer-video-play { position:absolute; display:flex; align-items:center; gap:8px; padding:9px 14px; border-radius:8px; background:var(--gold); color:#0b0d10; font-weight:750; }
 .organizer-video[open] .organizer-video-cover { display:none; }
 .organizer-videos video { display:block; width:100%; height:auto; }
-.organizer-price strong { font-size: 2rem; color: #e9ba56; }
+.organizer-price strong { font-size:clamp(2.5rem,6vw,3.5rem); line-height:1; color:#e9ba56; font-variant-numeric:tabular-nums; }
 #licenca details { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #34343a; }
 #licenca summary { cursor: pointer; font-weight: 600; }
 

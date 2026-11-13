@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
-import { organizerPrice } from './config';
+import { OrganizerPrice } from './OrganizerPrice';
 import { WindowsIcon } from './WindowsIcon';
 
 const api = '/api/organizer';
@@ -107,7 +107,7 @@ export function OrganizerCheckout() {
   }
 
   return <>
-    <div className="organizer-price"><strong>{organizerPrice}</strong><span>Pagamento único · Até dois computadores</span></div>
+    <OrganizerPrice/>
     {token ? <>
       <button className="button primary" disabled={busy} onClick={() => void check(approved)}>
         {approved && <WindowsIcon/>}
